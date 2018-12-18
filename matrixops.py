@@ -123,6 +123,7 @@ def row_reduce_down(m, inv, size, row):
     global step;
     if row > 0:
         step += 1
+        hint = 0
         # Make all elements before the diagonal 0 by subtracting from rows above
         raw_input("Step %d: Make all elements in row %d, before column %d to be equal to 0. Press Enter when ready..."
                   % (step, row+1, row+1))
@@ -130,23 +131,27 @@ def row_reduce_down(m, inv, size, row):
             if m[row*size+i] != 0:
                 e = m[row*size+i]
                 if e != 1:
-                    show_hint("    Hint: Divide row %d by %.2f. Next..." % (row+1, e))
-                    show_hint("    Hint: Subtract row %d from row %d. Next..." % (i+1, row+1))
-                else:
-                    show_hint("    Hint: Subtract row %d from row %d. Next..." % (i+1, row+1))
+                    for j in range(0, size):
+                        m[row*size+j] = m[row*size+j]/e
+                        inv[row*size+j] = inv[row*size+j]/e
+                    hint += 1
+                    show_hint("    Hint %d.%d: Divide row %d by %.2f. Next..." % (step, hint, row+1, e), True, m, inv, size)
+
                 for j in range(0, size):
-                    m[row*size+j] = m[row*size+j]/e
-                    inv[row*size+j] = inv[row*size+j]/e
                     m[row*size+j] = m[row*size+j]-m[i*size+j]
                     inv[row*size+j] = inv[row*size+j]-inv[i*size+j]
+                hint += 1
+                show_hint("    Hint %d.%d: Subtract row %d from row %d. Next..." % (step, hint, i+1, row+1), True, m, inv, size)
 
-        pretty_print_two_matrices(m, inv, size)
-        raw_input("Press Enter to continue...")
-        print
+        if not showHint:
+            pretty_print_two_matrices(m, inv, size)
+            raw_input("Press Enter to continue...")
+            print
 
     # Make the diagonal element 1
     if m[row*size+row] != 1:
         step += 1
+        hint = 0
         raw_input("Step %d: Make the element in row %d, column %d to be equal to 1. Press Enter when ready..."
                   % (step, row+1, row+1))
         diagElement = m[row*size+row]
@@ -161,24 +166,27 @@ def row_reduce_down(m, inv, size, row):
                     addRow -= size
 
                 # Found the row to add from
-                show_hint("    Hint: Add row %d to row %d. Next..." % (addRow+1, row+1))
                 if m[addRow*size+row] != 0:
                     for k in range(0, size):
                         m[row*size+k] = m[row*size+k] + m[addRow*size+k]
                         inv[row*size+k] = inv[row*size+k] + inv[addRow*size+k]
+                    hint += 1
+                    show_hint("    Hint %d.%d: Add row %d to row %d. Next..." % (step, hint, addRow+1, row+1), True, m, inv, size)
 
                     diagElement = m[row*size+row]
                     break
 
-        show_hint("    Hint: Divide row %d by %.2f. Next..." % (row+1, diagElement))
-        for j in range(0, size):
-            if diagElement != 0:
+        if diagElement != 0:
+            for j in range(0, size):
                 m[row*size+j] = m[row*size+j]/diagElement
                 inv[row*size+j] = inv[row*size+j]/diagElement
+            hint += 1
+            show_hint("    Hint %d.%d: Divide row %d by %.2f. Next..." % (step, hint, row+1, diagElement), True, m, inv, size)
 
-        pretty_print_two_matrices(m, inv, size)
-        raw_input("Press Enter to continue...")
-        print
+        if not showHint:
+            pretty_print_two_matrices(m, inv, size)
+            raw_input("Press Enter to continue...")
+            print
 
     return m, inv
 
@@ -187,23 +195,27 @@ def row_reduce_up(m, inv, size, row):
     global step;
     # Make all elements after the diagonal 0 by subtracting from rows below
     step += 1
+    hint = 0
     raw_input("Step %d: Make all elements in row %d, after column %d to be equal to 0. Press Enter when ready..."
               % (step, row+1, row+1))
     for i in range(size-1, row, -1):
         if m[row*size+i] != 0:
             e = m[row*size+i]
-            if e != 1:
-                show_hint("    Hint: Multiply row %d by: %.2f. Next..." % (i+1, e))
-                show_hint("    Hint: Subtract row %d from row %d. Next..." % (i+1, row+1))
-            else:
-                show_hint("    Hint: Subtract row %d from row %d. Next..." % (i+1, row+1))
             for j in range(0, size):
                 m[row*size+j] -= m[i*size+j]*e
                 inv[row*size+j] -= inv[i*size+j]*e
+            if e != 1:
+                hint += 1
+                show_hint("    Hint %d.%d: Multiply row %d by: %.2f and subtract from row %d. Next..."
+                          % (step, hint, i+1, e, row+1), True, m, inv, size)
+            else:
+                hint += 1
+                show_hint("    Hint %d.%d: Subtract row %d from row %d. Next..." % (step, hint, i+1, row+1), True, m, inv, size)
 
-    pretty_print_two_matrices(m, inv, size)
-    raw_input("Press Enter to continue...")
-    print
+    if not showHint:
+        pretty_print_two_matrices(m, inv, size)
+        raw_input("Press Enter to continue...")
+        print
 
     return m, inv
 
@@ -328,10 +340,14 @@ def get_largest_size(m, size):
 
     return l
 
-def show_hint(s):
+def show_hint(s, prettyPrint, m1, m2, size):
     global showHint
     if showHint:
         raw_input(s)
+        if prettyPrint:
+            pretty_print_two_matrices(m1, m2, size)
+            raw_input("    Press Enter to continue...")
+            print
 
 def pretty_print_matrix(matrix, size):
     m = []

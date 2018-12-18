@@ -62,7 +62,7 @@ def inverse(matrix, size):
     inverseMatrix = inverse_cofactors(matrix, size, det)
 
     # Calculate using guass jordan elimination, set the boolean below to True when implemented
-    inverseGJMethodImplemented = False
+    inverseGJMethodImplemented = True
     inverseMatrixGJMethod = inverse_guass_jordan(matrix, size, det)
 
     # Check they are the same
@@ -229,10 +229,14 @@ def get_largest_size(m, size):
 
     return l
 
-def show_hint(s):
+def show_hint(s, prettyPrint, m1, m2, size):
     global showHint
     if showHint:
         raw_input(s)
+        if prettyPrint:
+            pretty_print_two_matrices(m1, m2, size)
+            raw_input("    Press Enter to continue...")
+            print
 
 def pretty_print_matrix(matrix, size):
     m = []
