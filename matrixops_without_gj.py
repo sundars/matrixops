@@ -90,8 +90,8 @@ def inverse(matrix, size):
 
     return inverseMatrix
 
-# Exercise: Remove the code for this function and the ones for both row reductions for stundets to implement
-# This function should returns
+# Exercise: Implement code for this function and the ones for both row reduction functions below
+# This function should return
 #    1. The inverse of the matrix
 #
 # Inputs are
@@ -112,7 +112,7 @@ def inverse_guass_jordan(matrix, size, det):
 def row_reduce_down(m, inv, size, row):
     return m, inv
 
-# Row reduction udown - for Guass Jordan method - at the end of this we will have inverse
+# Row reduction up - for Guass Jordan method - at the end of this we will have inverse
 def row_reduce_up(m, inv, size, row):
     return m, inv
 
