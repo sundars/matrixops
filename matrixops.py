@@ -51,6 +51,8 @@ def pretty_print_matrix(matrix, size):
     for i in range(0, size):
         for j in range(0, size):
             m.append("%.2f" % matrix[x])
+            if m[x] == '-0.00':
+                m[x] = '0.00'
             x += 1
 
     just = get_largest_size(m, size) + 1
@@ -209,7 +211,11 @@ def pretty_print_two_matrices(matrix1, matrix2, size):
     for i in range (0, size):
         for j in range(0, size):
             m1.append("%.2f" % matrix1[x])
+            if m1[x] == '-0.00':
+                m1[x] = '0.00'
             m2.append("%.2f" % matrix2[x])
+            if m2[x] == '-0.00':
+                m2[x] = '0.00'
             x += 1
 
     just1 = get_largest_size(m1, size) + 1
@@ -246,24 +252,24 @@ def inverse_cofactors(matrix, size, det):
         mult1 *= -1
         mult2 = 1
 
-    raw_input("Step 1: Matrix of Minors. Press Enter when ready...")
+    raw_input("Step 1: Find determinant of sub-matrices to get Matrix of Minors. Press Enter when ready...")
     pretty_print_matrix(matrixMinors, size)
     raw_input("Press Enter to continue...")
     print
 
-    raw_input("Step 2: Matrix of Cofactors. Press Enter when ready...")
+    raw_input("Step 2: Alternate +/- on minors matrix to get Matrix of Cofactors. Press Enter when ready...")
     pretty_print_matrix(matrixCofactors, size)
     raw_input("Press Enter to continue...")
     print
 
     adjugateMatrix = transpose(matrixCofactors, size)
-    raw_input("Step 3: Adjugate Matrix. Press Enter when ready...")
+    raw_input("Step 3: Transpose the cofactors matrix to get Adjugate Matrix. Press Enter when ready...")
     pretty_print_matrix(adjugateMatrix, size)
     raw_input("Press Enter to continue...")
     print
 
     inverseMatrix = multiplyDeterminantInverse(adjugateMatrix, size, det) 
-    raw_input("Step 4: Divide by determinant to get inverse Matrix. Press Enter when ready...")
+    raw_input("Step 4: Divide adjugate by determinant to get inverse Matrix. Press Enter when ready...")
     pretty_print_matrix(inverseMatrix, size)
     raw_input("Press Enter to continue...")
     print
