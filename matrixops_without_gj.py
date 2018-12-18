@@ -34,6 +34,22 @@ def main():
         if inverseMatrix is not None:
             print "The inverse matrix is:"
             pretty_print_matrix(inverseMatrix, matrixSize)
+            print
+            print "------------------------------------------------------------------------------------"
+            print
+
+    print "Multiplying a matrix and its inverse will give..."
+    pretty_print_two_matrices(matrix, inverseMatrix, matrixSize)
+    raw_input("Press Enter to continue...")
+    print
+    productMatrix = multiply(matrix, inverseMatrix, matrixSize)
+    if not is_identity_matrix(productMatrix, matrixSize):
+        print "Something went wrong..."
+        sys.exit(4)
+
+    print "The identity matrix:"
+    pretty_print_matrix(productMatrix, matrixSize)
+    print
 
     if (not calculateInverse and not calculateDeterminant):
         print "No operation specified, nothing do... have a nice day"
@@ -98,7 +114,12 @@ def inverse(matrix, size):
 #    matrix: matrix to be inverted
 #    size: size of the matrix e.g., 3 for a 3x3 matrix
 #    det: determinant of the matrix (at this point it is guaranteed to be non-zero)
-def inverse_guass_jordan(matrix, size, det):
+def inverse_guass_jordan(m, size, det):
+    # Make a copy - python is effectively pass by reference
+    matrix = []
+    for i in range(0, size*size):
+        matrix.append(m[i])
+
     inverseMatrix = get_identity_matrix(size)
 
     print "Use Guass Jordan elimination and row-echelon form to find inverse of:"
@@ -106,6 +127,7 @@ def inverse_guass_jordan(matrix, size, det):
     raw_input("Press Enter to continue...")
     print
 
+    # At this point it should be the inverse
     return inverseMatrix
 
 # Row reduction down - for Guass Jordan method. At the end of this matrix will be in row-echelon form
@@ -151,14 +173,28 @@ def inverse_cofactors(matrix, size, det):
                True, inverseMatrix, None, size)
 
     if not showHint:
-        print("Inverse is:")
+        print "Inverse is:"
         pretty_print_matrix(inverseMatrix, size)
         raw_input("Press Enter to continue...")
         print
 
     return inverseMatrix
 
-# A bunch on utility functions below
+# Matrix multiplication - square matrices only for now - m2 left multiplied by m1
+# Input two matrices and the size (should be same)
+# Output is the product of the two matrices
+def multiply(m1, m2, s):
+    matrix = [];
+    for i in range(0, s):
+        for j in range(0, s):
+            e = 0
+            for k in range(0, s):
+                e += m1[i*s+k]*m2[j+k*s]
+            matrix.append(e)
+
+    return matrix
+
+# A bunch of utility functions below
 def transpose(matrix, size):
     x = 0
     t = []
@@ -216,9 +252,9 @@ def is_identity_matrix(m, size):
     for i in range(0, size):
         for j in range(0, size):
             if i == j:
-                if m[x] != 1.0: return False
+                if m[x]-1.0 > 0.001: return False
             else:
-                if m[x] != 0.0: return False
+                if m[x]-0.0 > 0.001: return False
             x += 1
 
     return True
