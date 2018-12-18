@@ -313,7 +313,6 @@ def multiplyDeterminantInverse(matrix, size, det):
 
 def get_identity_matrix(size):
     matrix = []
-    x = 0
     for i in range(0, size):
         for j in range (0, size):
             if (i == j):
