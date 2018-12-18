@@ -19,10 +19,14 @@ def main():
     print "Input matrix is:"
     pretty_print_matrix(matrix, matrixSize)
     print
+    print "------------------------------------------------------------------------------------"
+    print
 
     if calculateDeterminant:
         det = determinant(matrix, matrixSize)
         print "Determinant = ", det;
+        print
+        print "------------------------------------------------------------------------------------"
         print
 
     if calculateInverse:
@@ -61,8 +65,11 @@ def inverse(matrix, size):
     # Calculate inverse using matrix of minors, cofactors and adjugate
     inverseMatrix = inverse_cofactors(matrix, size, det)
 
+    print "------------------------------------------------------------------------------------"
+    print
+
     # Calculate using guass jordan elimination, set the boolean below to True when implemented
-    inverseGJMethodImplemented = True
+    inverseGJMethodImplemented = False
     inverseMatrixGJMethod = inverse_guass_jordan(matrix, size, det)
 
     # Check they are the same
@@ -74,9 +81,11 @@ def inverse(matrix, size):
 
         print "Inverse via the GJ method:"
         pretty_print_matrix(inverseMatrixGJMethod, size)
+        print
     else:
         print "Still need to implement inverse using GJ Method"
 
+    print "------------------------------------------------------------------------------------"
     print
 
     return inverseMatrix
@@ -97,7 +106,6 @@ def inverse_guass_jordan(matrix, size, det):
     raw_input("Press Enter to continue...")
     print
 
-    # At this point it should be the inverse
     return inverseMatrix
 
 # Row reduction down - for Guass Jordan method. At the end of this matrix will be in row-echelon form
@@ -128,27 +136,24 @@ def inverse_cofactors(matrix, size, det):
         mult1 *= -1
         mult2 = 1
 
-    raw_input("Step 1: Find determinant of sub-matrices to get Matrix of Minors. Press Enter when ready...")
-    pretty_print_matrix(matrixMinors, size)
-    raw_input("Press Enter to continue...")
-    print
+    show_hint("Step 1: Find determinant of sub-matrices to get Matrix of Minors. Press Enter when ready...",
+              True, matrixMinors, None, size)
 
-    raw_input("Step 2: Alternate +/- on minors matrix to get Matrix of Cofactors. Press Enter when ready...")
-    pretty_print_matrix(matrixCofactors, size)
-    raw_input("Press Enter to continue...")
-    print
+    show_hint("Step 2: Alternate +/- on minors matrix to get Matrix of Cofactors. Press Enter when ready...",
+              True, matrixCofactors, None, size)
 
     adjugateMatrix = transpose(matrixCofactors, size)
-    raw_input("Step 3: Transpose the cofactors matrix to get Adjugate Matrix. Press Enter when ready...")
-    pretty_print_matrix(adjugateMatrix, size)
-    raw_input("Press Enter to continue...")
-    print
+    show_hint("Step 3: Transpose the cofactors matrix to get Adjugate Matrix. Press Enter when ready...",
+              True, adjugateMatrix, None, size)
 
     inverseMatrix = multiplyDeterminantInverse(adjugateMatrix, size, det) 
-    raw_input("Step 4: Divide adjugate by determinant to get inverse Matrix. Press Enter when ready...")
-    pretty_print_matrix(inverseMatrix, size)
-    raw_input("Press Enter to continue...")
-    print
+    show_hint("Step 4: Divide adjugate by determinant to get inverse Matrix. Press Enter when ready...",
+               True, inverseMatrix, None, size)
+
+    if not showHint:
+        pretty_print_matrix(inverseMatrix, size)
+        raw_input("Press Enter to continue...")
+        print
 
     return inverseMatrix
 
@@ -234,8 +239,13 @@ def show_hint(s, prettyPrint, m1, m2, size):
     if showHint:
         raw_input(s)
         if prettyPrint:
-            pretty_print_two_matrices(m1, m2, size)
-            raw_input("    Press Enter to continue...")
+            if m2 is not None:
+                pretty_print_two_matrices(m1, m2, size)
+                raw_input("    Press Enter to continue...")
+            else:
+                pretty_print_matrix(m1, size)
+                raw_input("Press Enter to continue...")
+
             print
 
 def pretty_print_matrix(matrix, size):
