@@ -1,16 +1,5 @@
 import getopt, sys, math
 
-# Usage for this program
-def usage():
-    print sys.argv[0] + " [options]"
-    print "Matrix is required:"
-    print " -m MATRIX, --matrix MATRIX          Square matrix represented as a11,a12,...a1n,a21,a22,...,a2n,...,an1,an2,...ann"
-    print "Options:"
-    print " -i --inverse                        calculate the inverse of matrix"
-    print " -d --determinant                    calculate the determinant of matrix"
-    print " -v --verbose-hint                   show verbose hints for Guass Jordan elimination method"
-    print " -h, --help                          show this help message and exit"
-
 step = 0
 showHint = False
 
@@ -47,24 +36,21 @@ def main():
 
     sys.exit(0)
 
-def pretty_print_matrix(matrix, size):
-    m = []
-    x = 0
-    for i in range(0, size):
-        for j in range(0, size):
-            m.append("%.2f" % matrix[x])
-            if m[x] == '-0.00':
-                m[x] = '0.00'
-            x += 1
+# Find determinant - a recursive function
+def determinant(matrix, size):
+    if size == 1:
+        return matrix[0]
 
-    just = get_largest_size(m, size) + 1
-    x = 0
-    for i in range(0, size):
-        for j in range(0, size):
-            print m[x].rjust(just),
-            x += 1
-        print
+    value = 0
+    mult = 1
 
+    for i in range(0, size):
+        value += mult*matrix[i]*determinant(get_submatrix(matrix, size, 0, i),size-1)
+        mult *= -1
+
+    return value
+
+# Find inverse
 def inverse(matrix, size):
     det = determinant(matrix, size)
     if det == 0:
@@ -73,7 +59,7 @@ def inverse(matrix, size):
         return
 
     # Calculate inverse using matrix of minors, cofactors and adjugate
-    inverseMatrixCofactorMethod = inverse_cofactors(matrix, size, det)
+    inverseMatrix = inverse_cofactors(matrix, size, det)
 
     # Calculate using guass jordan elimination, set the boolean below to True when implemented
     inverseGJMethodImplemented = True
@@ -81,7 +67,7 @@ def inverse(matrix, size):
 
     # Check they are the same
     if inverseGJMethodImplemented:
-        if check_inverse(inverseMatrixCofactorMethod, inverseMatrixGJMethod):
+        if matrices_are_same(inverseMatrix, inverseMatrixGJMethod):
             print "Yay! got the correct inverse using GJ method"
         else:
             print "Oops! got the wrong inverse using GJ method"
@@ -93,9 +79,10 @@ def inverse(matrix, size):
 
     print
 
-    return inverseMatrixCofactorMethod
+    return inverseMatrix
 
-# For Mukundan to implement, this function should returns
+# Exercise: Remove the code for this function and the ones for both row reductions for stundets to implement
+# This function should returns
 #    1. The inverse of the matrix
 #
 # Inputs are
@@ -105,7 +92,7 @@ def inverse(matrix, size):
 def inverse_guass_jordan(matrix, size, det):
     inverseMatrix = get_identity_matrix(size)
 
-    print "Using Guass Jordan elimination and row-echelon form to find inverse of:"
+    print "Use Guass Jordan elimination and row-echelon form to find inverse of:"
     pretty_print_two_matrices(matrix, inverseMatrix, size)
     raw_input("Press Enter to continue...")
     print
@@ -131,30 +118,7 @@ def inverse_guass_jordan(matrix, size, det):
     # At this point it should be the inverse
     return inverseMatrix
 
-def row_reduce_up(m, inv, size, row):
-    global step;
-    # Make all elements after the diagonal 0 by subtracting from rows below
-    step += 1
-    raw_input("Step %d: Make all elements in row %d, after column %d to be equal to 0. Press Enter when ready..."
-              % (step, row+1, row+1))
-    for i in range(size-1, row, -1):
-        if m[row*size+i] != 0:
-            e = m[row*size+i]
-            if e != 1:
-                show_hint("    Hint: Multiply row %d by: %.2f. Next..." % (i+1, e))
-                show_hint("    Hint: Subtract row %d from row %d. Next..." % (i+1, row+1))
-            else:
-                show_hint("    Hint: Subtract row %d from row %d. Next..." % (i+1, row+1))
-            for j in range(0, size):
-                m[row*size+j] -= m[i*size+j]*e
-                inv[row*size+j] -= inv[i*size+j]*e
-
-    pretty_print_two_matrices(m, inv, size)
-    raw_input("Press Enter to continue...")
-    print
-
-    return m, inv
-
+# Row reduction down - for Guass Jordan method. At the end of this matrix will be in row-echelon form
 def row_reduce_down(m, inv, size, row):
     global step;
     if row > 0:
@@ -218,37 +182,34 @@ def row_reduce_down(m, inv, size, row):
 
     return m, inv
 
-def pretty_print_two_matrices(matrix1, matrix2, size):
-    m1 = []
-    m2 = []
-    x = 0
-    for i in range (0, size):
-        for j in range(0, size):
-            m1.append("%.2f" % matrix1[x])
-            if m1[x] == '-0.00':
-                m1[x] = '0.00'
-            m2.append("%.2f" % matrix2[x])
-            if m2[x] == '-0.00':
-                m2[x] = '0.00'
-            x += 1
+# Row reduction udown - for Guass Jordan method - at the end of this we will have inverse
+def row_reduce_up(m, inv, size, row):
+    global step;
+    # Make all elements after the diagonal 0 by subtracting from rows below
+    step += 1
+    raw_input("Step %d: Make all elements in row %d, after column %d to be equal to 0. Press Enter when ready..."
+              % (step, row+1, row+1))
+    for i in range(size-1, row, -1):
+        if m[row*size+i] != 0:
+            e = m[row*size+i]
+            if e != 1:
+                show_hint("    Hint: Multiply row %d by: %.2f. Next..." % (i+1, e))
+                show_hint("    Hint: Subtract row %d from row %d. Next..." % (i+1, row+1))
+            else:
+                show_hint("    Hint: Subtract row %d from row %d. Next..." % (i+1, row+1))
+            for j in range(0, size):
+                m[row*size+j] -= m[i*size+j]*e
+                inv[row*size+j] -= inv[i*size+j]*e
 
-    just1 = get_largest_size(m1, size) + 1
-    just2 = get_largest_size(m2, size) + 1
-    x1 = 0
-    x2 = 0
-    for i in range(0, size):
-        for j in range(0, size):
-            print m1[x1].rjust(just1),
-            x1 += 1
+    pretty_print_two_matrices(m, inv, size)
+    raw_input("Press Enter to continue...")
+    print
 
-        print "      ",
-        for j in range(0, size):
-            print m2[x2].rjust(just2),
-            x2 += 1
-        print
+    return m, inv
 
+# Inverse via minors, cofactors and adjugate - to double check Guass Jordan elimination
 def inverse_cofactors(matrix, size, det):
-    print "Calculating inverse using matrix of minors, cofactors and adjugate"
+    print "Calculate inverse using matrix of minors, cofactors and adjugate"
     print
     matrixMinors = []
     matrixCofactors = []
@@ -290,16 +251,7 @@ def inverse_cofactors(matrix, size, det):
 
     return inverseMatrix
 
-def multiplyDeterminantInverse(matrix, size, det):
-    invDet = 1.0/det
-
-    inv = []
-    for e in matrix:
-        x = e*invDet;
-        inv.append(x)
-
-    return inv
-
+# A bunch on utility functions below
 def transpose(matrix, size):
     x = 0
     t = []
@@ -310,20 +262,7 @@ def transpose(matrix, size):
 
     return t
 
-def determinant(matrix, size):
-    if size == 1:
-        return matrix[0]
-
-    value = 0
-    mult = 1
-
-    for i in range(0, size):
-        value += mult*matrix[i]*determinant(get_submatrix(matrix, size, 0, i),size-1)
-        mult *= -1
-
-    return value
-
-def check_inverse(m1, m2):
+def matrices_are_same(m1, m2):
     if len(m1) != len(m2):
         return False
 
@@ -344,6 +283,15 @@ def get_submatrix(m, size, row, column):
 
     return matrix
 
+def multiplyDeterminantInverse(matrix, size, det):
+    invDet = 1.0/det
+
+    inv = []
+    for e in matrix:
+        x = e*invDet;
+        inv.append(x)
+
+    return inv
 
 def get_identity_matrix(size):
     matrix = []
@@ -385,6 +333,53 @@ def show_hint(s):
     if showHint:
         raw_input(s)
 
+def pretty_print_matrix(matrix, size):
+    m = []
+    x = 0
+    for i in range(0, size):
+        for j in range(0, size):
+            m.append("%.2f" % matrix[x])
+            if m[x] == '-0.00':
+                m[x] = '0.00'
+            x += 1
+
+    just = get_largest_size(m, size) + 1
+    x = 0
+    for i in range(0, size):
+        for j in range(0, size):
+            print m[x].rjust(just),
+            x += 1
+        print
+
+def pretty_print_two_matrices(matrix1, matrix2, size):
+    m1 = []
+    m2 = []
+    x = 0
+    for i in range (0, size):
+        for j in range(0, size):
+            m1.append("%.2f" % matrix1[x])
+            if m1[x] == '-0.00':
+                m1[x] = '0.00'
+            m2.append("%.2f" % matrix2[x])
+            if m2[x] == '-0.00':
+                m2[x] = '0.00'
+            x += 1
+
+    just1 = get_largest_size(m1, size) + 1
+    just2 = get_largest_size(m2, size) + 1
+    x1 = 0
+    x2 = 0
+    for i in range(0, size):
+        for j in range(0, size):
+            print m1[x1].rjust(just1),
+            x1 += 1
+
+        print "      ",
+        for j in range(0, size):
+            print m2[x2].rjust(just2),
+            x2 += 1
+        print
+
 def parseArgs():
     global showHint
     matrix = ""
@@ -420,5 +415,16 @@ def parseArgs():
         sys.exit(2)
 
     return (calculateInverse, calculateDeterminant, matrix)
+
+# Usage for this program
+def usage():
+    print sys.argv[0] + " [options]"
+    print "Matrix is required:"
+    print " -m MATRIX, --matrix MATRIX          Square matrix represented as a11,a12,...a1n,a21,a22,...,a2n,...,an1,an2,...ann"
+    print "Options:"
+    print " -i --inverse                        calculate the inverse of matrix"
+    print " -d --determinant                    calculate the determinant of matrix"
+    print " -v --verbose-hint                   show verbose hints for Guass Jordan elimination method"
+    print " -h, --help                          show this help message and exit"
 
 main()
