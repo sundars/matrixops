@@ -152,7 +152,7 @@ def row_reduce_down(m, inv, size, row):
                 hint += 1
                 show_hint("    Hint %d.%d: Subtract row %d from row %d. Next..." % (step, hint, i+1, row+1), True, m, inv, size)
 
-        if not showHint:
+        if hint == 0:
             pretty_print_two_matrices(m, inv, size)
             raw_input("Press Enter to continue...")
             print
@@ -192,7 +192,7 @@ def row_reduce_down(m, inv, size, row):
             hint += 1
             show_hint("    Hint %d.%d: Divide row %d by %.2f. Next..." % (step, hint, row+1, diagElement), True, m, inv, size)
 
-        if not showHint:
+        if hint == 0:
             pretty_print_two_matrices(m, inv, size)
             raw_input("Press Enter to continue...")
             print
@@ -221,7 +221,7 @@ def row_reduce_up(m, inv, size, row):
                 hint += 1
                 show_hint("    Hint %d.%d: Subtract row %d from row %d. Next..." % (step, hint, i+1, row+1), True, m, inv, size)
 
-    if not showHint:
+    if hint == 0:
         pretty_print_two_matrices(m, inv, size)
         raw_input("Press Enter to continue...")
         print
@@ -263,6 +263,7 @@ def inverse_cofactors(matrix, size, det):
                True, inverseMatrix, None, size)
 
     if not showHint:
+        print("Inverse is:")
         pretty_print_matrix(inverseMatrix, size)
         raw_input("Press Enter to continue...")
         print
@@ -352,11 +353,10 @@ def show_hint(s, prettyPrint, m1, m2, size):
         if prettyPrint:
             if m2 is not None:
                 pretty_print_two_matrices(m1, m2, size)
-                raw_input("    Press Enter to continue...")
             else:
                 pretty_print_matrix(m1, size)
-                raw_input("Press Enter to continue...")
 
+            raw_input("Press Enter to continue...")
             print
 
 def pretty_print_matrix(matrix, size):

@@ -151,6 +151,7 @@ def inverse_cofactors(matrix, size, det):
                True, inverseMatrix, None, size)
 
     if not showHint:
+        print("Inverse is:")
         pretty_print_matrix(inverseMatrix, size)
         raw_input("Press Enter to continue...")
         print
@@ -240,11 +241,10 @@ def show_hint(s, prettyPrint, m1, m2, size):
         if prettyPrint:
             if m2 is not None:
                 pretty_print_two_matrices(m1, m2, size)
-                raw_input("    Press Enter to continue...")
             else:
                 pretty_print_matrix(m1, size)
-                raw_input("Press Enter to continue...")
 
+            raw_input("Press Enter to continue...")
             print
 
 def pretty_print_matrix(matrix, size):
