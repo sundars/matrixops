@@ -38,18 +38,18 @@ def main():
             print "------------------------------------------------------------------------------------"
             print
 
-    print "Multiplying a matrix and its inverse will give..."
-    pretty_print_two_matrices(matrix, inverseMatrix, matrixSize)
-    raw_input("Press Enter to continue...")
-    print
-    productMatrix = multiply(matrix, inverseMatrix, matrixSize)
-    if not is_identity_matrix(productMatrix, matrixSize):
-        print "Something went wrong..."
-        sys.exit(4)
+        print "Multiplying a matrix and its inverse will give..."
+        pretty_print_two_matrices(matrix, inverseMatrix, matrixSize)
+        raw_input("Press Enter to continue...")
+        print
+        productMatrix = multiply(matrix, inverseMatrix, matrixSize)
+        if not is_identity_matrix(productMatrix, matrixSize):
+            print "Something went wrong..."
+            sys.exit(4)
 
-    print "The identity matrix:"
-    pretty_print_matrix(productMatrix, matrixSize)
-    print
+        print "The identity matrix:"
+        pretty_print_matrix(productMatrix, matrixSize)
+        print
 
     if (not calculateInverse and not calculateDeterminant):
         print "No operation specified, nothing do... have a nice day"
