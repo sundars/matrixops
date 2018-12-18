@@ -8,9 +8,11 @@ def usage():
     print "Options:"
     print " -i --inverse                        calculate the inverse of matrix"
     print " -d --determinant                    calculate the determinant of matrix"
+    print " -v --verbose-hint                   show verbose hints for Guass Jordan elimination method"
     print " -h, --help                          show this help message and exit"
 
 step = 0
+showHint = False
 
 def main():
     matrix = []
@@ -133,11 +135,16 @@ def row_reduce_up(m, inv, size, row):
     global step;
     # Make all elements after the diagonal 0 by subtracting from rows below
     step += 1
-    raw_input("Step %d: Make all elements in row: %d, after column: %d to be equal to 0. Press Enter when ready..."
+    raw_input("Step %d: Make all elements in row %d, after column %d to be equal to 0. Press Enter when ready..."
               % (step, row+1, row+1))
     for i in range(size-1, row, -1):
         if m[row*size+i] != 0:
             e = m[row*size+i]
+            if e != 1:
+                show_hint("    Hint: Multiply row %d by: %.2f. Next..." % (i+1, e))
+                show_hint("    Hint: Subtract row %d from row %d. Next..." % (i+1, row+1))
+            else:
+                show_hint("    Hint: Subtract row %d from row %d. Next..." % (i+1, row+1))
             for j in range(0, size):
                 m[row*size+j] -= m[i*size+j]*e
                 inv[row*size+j] -= inv[i*size+j]*e
@@ -153,11 +160,16 @@ def row_reduce_down(m, inv, size, row):
     if row > 0:
         step += 1
         # Make all elements before the diagonal 0 by subtracting from rows above
-        raw_input("Step %d: Make all elements in row: %d, before column: %d to be equal to 0. Press Enter when ready..."
+        raw_input("Step %d: Make all elements in row %d, before column %d to be equal to 0. Press Enter when ready..."
                   % (step, row+1, row+1))
         for i in range(0, row):
             if m[row*size+i] != 0:
                 e = m[row*size+i]
+                if e != 1:
+                    show_hint("    Hint: Divide row %d by %.2f. Next..." % (row+1, e))
+                    show_hint("    Hint: Subtract row %d from row %d. Next..." % (i+1, row+1))
+                else:
+                    show_hint("    Hint: Subtract row %d from row %d. Next..." % (i+1, row+1))
                 for j in range(0, size):
                     m[row*size+j] = m[row*size+j]/e
                     inv[row*size+j] = inv[row*size+j]/e
@@ -171,7 +183,7 @@ def row_reduce_down(m, inv, size, row):
     # Make the diagonal element 1
     if m[row*size+row] != 1:
         step += 1
-        raw_input("Step %d: Make the element in row: %d, column: %d to be equal to 1. Press Enter when ready..."
+        raw_input("Step %d: Make the element in row %d, column %d to be equal to 1. Press Enter when ready..."
                   % (step, row+1, row+1))
         diagElement = m[row*size+row]
 
@@ -185,6 +197,7 @@ def row_reduce_down(m, inv, size, row):
                     addRow -= size
 
                 # Found the row to add from
+                show_hint("    Hint: Add row %d to row %d. Next..." % (addRow+1, row+1))
                 if m[addRow*size+row] != 0:
                     for k in range(0, size):
                         m[row*size+k] = m[row*size+k] + m[addRow*size+k]
@@ -193,6 +206,7 @@ def row_reduce_down(m, inv, size, row):
                     diagElement = m[row*size+row]
                     break
 
+        show_hint("    Hint: Divide row %d by %.2f. Next..." % (row+1, diagElement))
         for j in range(0, size):
             if diagElement != 0:
                 m[row*size+j] = m[row*size+j]/diagElement
@@ -366,14 +380,20 @@ def get_largest_size(m, size):
 
     return l
 
+def show_hint(s):
+    global showHint
+    if showHint:
+        raw_input(s)
+
 def parseArgs():
+    global showHint
     matrix = ""
     calculateInverse = False
     calculateDeterminant = False
 
     # Get the inputs/arguments
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 'hidm:', ['matrix='])
+        opts, args = getopt.getopt(sys.argv[1:], 'vhidm:', ['matrix='])
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -387,6 +407,8 @@ def parseArgs():
             calculateInverse = True
         elif opt in ('-d', '--determinant'):
             calculateDeterminant = True;
+        elif opt in ('-v', '--verbose-hints'):
+            showHint = True;
         elif opt in ('-m', '--matrix'):
             matrix = arg
         else:
