@@ -474,20 +474,22 @@ def parseArgs():
         r1 = c1 = int(math.sqrt(len(m1)))
         if r1 ** 2 != len(m1):
             print "Expected a square matrix for -m argument"
-            print "If non-square, specify as a11,a12,...a1n:a21,a22,...a2n:...:am1,am2...amn"
+            print "If non-square, specify as a11,a12,...a1n:a21,a22,...a2n:...:am1,am2...amn:"
             usage()
             sys.exit(3)
 
     else:
         r1 = len(rows)
+        if rows[r1-1] == "":
+            r1 -= 1
         for i in range(0, r1):
             for e in rows[i].split(','):
                 m1.append(float(e))
 
         c1 = int(len(m1)/r1)
         if c1*r1 != len(m1):
-            print "Matrix to multiply isn't properly formatted"
-            print "Format as a11,a12,...,a1n:a21,a22,...,a2n:...:am1,am2,...,amn"
+            print "Matrix with -m isn't properly formatted"
+            print "Format as a11,a12,...,a1n:a21,a22,...,a2n:...:am1,am2,...,amn:"
             usage()
             sys.exit(3)
 
@@ -509,20 +511,22 @@ def parseArgs():
             c2 = r2 = int(math.sqrt(len(m2)))
             if r2 ** 2 != len(m2):
                 print "Expected a square matrix for -p argument"
-                print "If non-square, specify as a11,a12,...,a1n:a21,a22,...,a2n:...:am1,am2,...,amn"
+                print "If non-square, specify as a11,a12,...,a1n:a21,a22,...,a2n:...:am1,am2,...,amn:"
                 usage()
                 sys.exit(3)
 
         else:
             r2 = len(rows)
+            if rows[r2-1] == "":
+                r2 -= 1
             for i in range(0, r2):
                 for e in rows[i].split(','):
                     m2.append(float(e))
 
             c2 = int(len(m2)/r2)
             if c2*r2 != len(m2):
-                print "Matrix to multiply isn't properly formatted"
-                print "Format as a11,a12,...,a1n:a21,a22,...,a2n:...:am1,am2,...,amn"
+                print "Matrix with -p isn't properly formatted"
+                print "Format as a11,a12,...,a1n:a21,a22,...,a2n:...:am1,am2,...,amn:"
                 usage()
                 sys.exit(3)
 
@@ -530,10 +534,11 @@ def parseArgs():
 
 # Usage for this program
 def usage():
+    print
     print sys.argv[0] + " [options]"
     print "Matrix is required:"
     print " -m MATRIX, --matrix=MATRIX          Square matrix formatted as a11,a12,...,a1n,a21,a22,...,a2n,...,an1,an2,...,ann"
-    print "                                     Non-square formatted as a11,a12,...,a1n:a21,a22,...,a2n:...:am1,am2,...,amn"
+    print "                                     Non-square formatted as a11,a12,...,a1n:a21,a22,...,a2n:...:am1,am2,...,amn:"
     print "Options:"
     print " -p MATRIX --matrix-multiply=MATRIX  left multiply matrix provided by -m with the one provided by -p"
     print " -i --inverse                        calculate the inverse of matrix"
