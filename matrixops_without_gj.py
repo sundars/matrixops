@@ -4,54 +4,81 @@ step = 0
 showHint = False
 
 def main():
-    matrix = []
-    calculateInverse, calculateDeterminant, elements = parseArgs()
-    for e in elements.split(','):
-        matrix.append(float(e))
-
-    matrixSize = int(math.sqrt(len(matrix)))
-    if matrixSize ** 2 != len(matrix):
-        print "Matrix must be a square matrix"
-        usage()
-        sys.exit(3)
+    global showHint
+    calculateInverse, calculateDeterminant, m1, r1, c1, m2, r2, c2 = parseArgs()
 
     print
-    print "Input matrix is:"
-    pretty_print_matrix(matrix, matrixSize)
+    if r2 != 0 and c2 != 0:
+        print "Input matrices are:"
+        pretty_print_two_matrices(m1, m2, r1, c1, r2, c2)
+        print
+        if calculateDeterminant: print "- Calculate determinant of first matrix"
+        if calculateInverse: print "- Calculate inverse of first matrix"
+        print "- Left multiply second matrix with the first matrix"
+    else:
+        print "Input matrix is:"
+        pretty_print_matrix(m1, r1, c1)
+        print
+        if calculateDeterminant: print "- Calculate determinant of this matrix"
+        if calculateInverse: print "- Calculate inverse of this matrix"
     print
     print "------------------------------------------------------------------------------------"
     print
 
     if calculateDeterminant:
-        det = determinant(matrix, matrixSize)
-        print "Determinant = ", det;
+        det = determinant(m1, r1)
+        print "Determinant = ", det
         print
         print "------------------------------------------------------------------------------------"
         print
 
     if calculateInverse:
-        inverseMatrix = inverse(matrix, matrixSize)
+        inverseMatrix = inverse(m1, r1)
         if inverseMatrix is not None:
             print "The inverse matrix is:"
-            pretty_print_matrix(inverseMatrix, matrixSize)
+            pretty_print_matrix(inverseMatrix, r1)
             print
             print "------------------------------------------------------------------------------------"
             print
 
         print "Multiplying a matrix and its inverse will give..."
-        pretty_print_two_matrices(matrix, inverseMatrix, matrixSize)
+        pretty_print_two_matrices(m1, inverseMatrix, r1)
         raw_input("Press Enter to continue...")
         print
-        productMatrix = multiply(matrix, inverseMatrix, matrixSize)
-        if not is_identity_matrix(productMatrix, matrixSize):
+        tmp = showHint
+        showHint = False
+        productMatrix = multiply(m1, inverseMatrix, r1)
+        showHint = tmp
+        if not is_identity_matrix(productMatrix, r1):
             print "Something went wrong..."
+            pretty_print_matrix(productMatrix, r1)
             sys.exit(4)
 
         print "The identity matrix:"
-        pretty_print_matrix(productMatrix, matrixSize)
+        pretty_print_matrix(productMatrix, r1)
+        print
+        print "------------------------------------------------------------------------------------"
         print
 
-    if (not calculateInverse and not calculateDeterminant):
+    if r2 != 0 and c2 != 0:
+        if c1 != r2:
+            print "Cannot multiply these two matrices:"
+            pretty_print_two_matrices(m1, m2, r1, c1, r2, c2)
+            sys.exit(5)
+
+        print "Multiply the following two matrices:"
+        pretty_print_two_matrices(m1, m2, r1, c1, r2, c2)
+        raw_input("Press Enter to continue...")
+        print
+        productMatrix = multiply(m1, m2, r1, c1, r2, c2)
+        print "Product matrix:"
+        pretty_print_matrix(productMatrix, r1, c2)
+        print
+        print "------------------------------------------------------------------------------------"
+        print
+
+
+    if (not calculateInverse and not calculateDeterminant and (r2 == 0 or c2 == 0)):
         print "No operation specified, nothing do... have a nice day"
 
     sys.exit(0)
@@ -106,7 +133,7 @@ def inverse(matrix, size):
 
     return inverseMatrix
 
-# Exercise: Implement code for this function and the ones for both row reduction functions below
+# Exercise: Remove the code for this function and the ones for both row reduction functions below for students to implement
 # This function should return
 #    1. The inverse of the matrix
 #
@@ -180,21 +207,41 @@ def inverse_cofactors(matrix, size, det):
 
     return inverseMatrix
 
-# Matrix multiplication - square matrices only for now - m2 left multiplied by m1
-# Input two matrices and the size (should be same)
+# Matrix multiplication - m2 left multiplied by m1
+# Input two matrices and their sizes: r1, c1, r2, c2
+# Either only r1 is specified in which case it is 2 square matrices of same size
+# Or all 4 sizes are specified
+#
 # Output is the product of the two matrices
-def multiply(m1, m2, s):
-    matrix = [];
-    for i in range(0, s):
-        for j in range(0, s):
+def multiply(m1, m2, r1, c1=-1, r2=-1, c2=-1):
+    if c1 == -1:
+        # Two square matrix of same size
+        c1 = r2 = c2 = r1
+
+    if c1 != r2:
+        # Two square matrices of different size, cannot multiply
+        return None
+
+    matrix = []
+    for i in range(0, r1):
+        for j in range(0, c2):
+            matrix.append('...')
+
+    x = 0
+    for i in range(0, r1):
+        for j in range(0, c2):
             e = 0
-            for k in range(0, s):
-                e += m1[i*s+k]*m2[j+k*s]
-            matrix.append(e)
+            for k in range(0, c1):
+                e += m1[i*c1+k]*m2[k*c2+j]
+            matrix[x] = e
+            x += 1
+            show_hint("Step %d: Multiply corresponding elements in row %d of 1st matrix and column %d of 2nd matrix and add up..."
+                      % (x, i+1, j+1), True, matrix, None, r1, c2)
 
     return matrix
 
 # A bunch of utility functions below
+# Only valid for square matrix
 def transpose(matrix, size):
     x = 0
     t = []
@@ -205,6 +252,7 @@ def transpose(matrix, size):
 
     return t
 
+# Any 2 matrices
 def matrices_are_same(m1, m2):
     if len(m1) != len(m2):
         return False
@@ -215,6 +263,7 @@ def matrices_are_same(m1, m2):
 
     return True
 
+# Only valid for square matrix
 def get_submatrix(m, size, row, column):
     matrix = []
     x = 0
@@ -226,16 +275,18 @@ def get_submatrix(m, size, row, column):
 
     return matrix
 
+# Only valid for square matrix
 def multiplyDeterminantInverse(matrix, size, det):
     invDet = 1.0/det
 
     inv = []
     for e in matrix:
-        x = e*invDet;
+        x = e*invDet
         inv.append(x)
 
     return inv
 
+# Only valid for square matrix
 def get_identity_matrix(size):
     matrix = []
     for i in range(0, size):
@@ -247,6 +298,7 @@ def get_identity_matrix(size):
 
     return matrix
 
+# Only valid for square matrix
 def is_identity_matrix(m, size):
     x = 0
     for i in range(0, size):
@@ -259,86 +311,129 @@ def is_identity_matrix(m, size):
 
     return True
 
-def get_largest_size(m, size):
+# Input matrix and size: r1, c1
+# If c1 is -1, it is a square matrix
+def get_largest_size(m, rSize, cSize):
     l = 2
     x = 0
-    for i in range(0, size):
-        for j in range(0, size):
+    for i in range(0, rSize):
+        for j in range(0, cSize):
             if len(str(m[x])) > l:
                 l = len(str(m[x]))
             x += 1
 
     return l
 
-def show_hint(s, prettyPrint, m1, m2, size):
+# Input two matrices and their sizes: r1, c1, r2, c2
+# Either only r1 is specified in which case it is 2 square matrices of same size
+# Or all 4 sizes are specified
+def show_hint(s, prettyPrint, m1, m2, rSize1, cSize1=-1, rSize2=-1, cSize2=-1):
+    if cSize1 == -1:
+        # Two square matrices of same size
+        cSize1 = rSize2 = cSize2 = rSize1
+
     global showHint
     if showHint:
         raw_input(s)
         if prettyPrint:
             if m2 is not None:
-                pretty_print_two_matrices(m1, m2, size)
+                pretty_print_two_matrices(m1, m2, rSize1, cSize1, rSize2, cSize2)
             else:
-                pretty_print_matrix(m1, size)
+                pretty_print_matrix(m1, rSize1, cSize1)
 
             raw_input("Press Enter to continue...")
             print
 
-def pretty_print_matrix(matrix, size):
+# Input matrix and size: r1, c1
+# If c1 is -1, it is a square matrix
+def pretty_print_matrix(matrix, rSize, cSize=-1):
+    if cSize == -1:
+        # Square matrix
+        cSize = rSize
+
     m = []
     x = 0
-    for i in range(0, size):
-        for j in range(0, size):
-            m.append("%.2f" % matrix[x])
+    for i in range(0, rSize):
+        for j in range(0, cSize):
+            if type(matrix[x]) is str:
+                m.append(matrix[x])
+            else:
+                m.append("%.2f" % matrix[x])
             if m[x] == '-0.00':
                 m[x] = '0.00'
             x += 1
 
-    just = get_largest_size(m, size) + 1
+    just = get_largest_size(m, rSize, cSize) + 1
     x = 0
-    for i in range(0, size):
-        for j in range(0, size):
+    for i in range(0, rSize):
+        for j in range(0, cSize):
             print m[x].rjust(just),
             x += 1
         print
 
-def pretty_print_two_matrices(matrix1, matrix2, size):
+# Input two matrices and their sizes: r1, c1, r2, c2
+# Either only r1 is specified in which case it is 2 square matrices of same size
+# Or all 4 sizes are specified
+def pretty_print_two_matrices(matrix1, matrix2, rSize1, cSize1=-1, rSize2=-1, cSize2=-1):
+    if cSize1 == -1:
+        # Two square matrices of same size
+        cSize1 = rSize2 = cSize2 = rSize1
+
     m1 = []
-    m2 = []
     x = 0
-    for i in range (0, size):
-        for j in range(0, size):
-            m1.append("%.2f" % matrix1[x])
+    for i in range (0, rSize1):
+        for j in range(0, cSize1):
+            if type(matrix1[x]) is str:
+                m1.append(matrix1[x])
+            else:
+                m1.append("%.2f" % matrix1[x])
             if m1[x] == '-0.00':
                 m1[x] = '0.00'
-            m2.append("%.2f" % matrix2[x])
+            x += 1
+
+    m2 = []
+    x = 0
+    for i in range (0, rSize2):
+        for j in range(0, cSize2):
+            if type(matrix2[x]) is str:
+                m2.append(matrix2[x])
+            else:
+                m2.append("%.2f" % matrix2[x])
             if m2[x] == '-0.00':
                 m2[x] = '0.00'
             x += 1
 
-    just1 = get_largest_size(m1, size) + 1
-    just2 = get_largest_size(m2, size) + 1
+    just1 = get_largest_size(m1, rSize1, cSize1) + 1
+    just2 = get_largest_size(m2, rSize2, cSize2) + 1
     x1 = 0
     x2 = 0
-    for i in range(0, size):
-        for j in range(0, size):
-            print m1[x1].rjust(just1),
-            x1 += 1
+    for i in range(0, max(rSize1, rSize2)):
+        for j in range(0, cSize1):
+            if i < rSize1:
+                print m1[x1].rjust(just1),
+                x1 += 1
+            else:
+                print ''.rjust(just1),
 
         print "      ",
-        for j in range(0, size):
-            print m2[x2].rjust(just2),
-            x2 += 1
+        for j in range(0, cSize2):
+            if i < rSize2:
+                print m2[x2].rjust(just2),
+                x2 += 1
+            else:
+                print ''.rjust(just2),
         print
 
 def parseArgs():
     global showHint
-    matrix = ""
+    marg = ""
+    parg = ""
     calculateInverse = False
     calculateDeterminant = False
 
     # Get the inputs/arguments
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 'vhidm:', ['matrix='])
+        opts, args = getopt.getopt(sys.argv[1:], 'vhidp:m:', ['matrix=', 'matrix-multiply='])
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -351,27 +446,96 @@ def parseArgs():
         elif opt in ('-i', '--inverse'):
             calculateInverse = True
         elif opt in ('-d', '--determinant'):
-            calculateDeterminant = True;
+            calculateDeterminant = True
         elif opt in ('-v', '--verbose-hints'):
-            showHint = True;
+            showHint = True
         elif opt in ('-m', '--matrix'):
-            matrix = arg
+            marg = arg
+        elif opt in ('-p', '--matrix-multiply'):
+            parg = arg
         else:
             usage()
             sys.exit(2)
 
-    if matrix == "":
+    if marg == "":
         usage()
         sys.exit(2)
 
-    return (calculateInverse, calculateDeterminant, matrix)
+    # Parse the matrices
+    m1 = []
+    r1 = 0
+    c1 = 0
+    rows = marg.split(':')
+    if len(rows) == 1:
+        # Assume square matrix
+        for e in marg.split(','):
+            m1.append(float(e))
+
+        r1 = c1 = int(math.sqrt(len(m1)))
+        if r1 ** 2 != len(m1):
+            print "Expected a square matrix for -m argument"
+            print "If non-square, specify as a11,a12,...a1n:a21,a22,...a2n:...:am1,am2...amn"
+            usage()
+            sys.exit(3)
+
+    else:
+        r1 = len(rows)
+        for i in range(0, r1):
+            for e in rows[i].split(','):
+                m1.append(float(e))
+
+        c1 = int(len(m1)/r1)
+        if c1*r1 != len(m1):
+            print "Matrix to multiply isn't properly formatted"
+            print "Format as a11,a12,...,a1n:a21,a22,...,a2n:...:am1,am2,...,amn"
+            usage()
+            sys.exit(3)
+
+    if (calculateInverse or calculateDeterminant) and (r1 != c1):
+        print "Must specify square matrix to calculate inverse or determinant"
+        usage()
+        sys.exit(3)
+
+    m2 = []
+    r2 = 0
+    c2 = 0
+    if parg is not "":
+        rows = parg.split(':')
+        if len(rows) == 1:
+            # Assume square matrix
+            for e in parg.split(','):
+                m2.append(float(e))
+
+            c2 = r2 = int(math.sqrt(len(m2)))
+            if r2 ** 2 != len(m2):
+                print "Expected a square matrix for -p argument"
+                print "If non-square, specify as a11,a12,...,a1n:a21,a22,...,a2n:...:am1,am2,...,amn"
+                usage()
+                sys.exit(3)
+
+        else:
+            r2 = len(rows)
+            for i in range(0, r2):
+                for e in rows[i].split(','):
+                    m2.append(float(e))
+
+            c2 = int(len(m2)/r2)
+            if c2*r2 != len(m2):
+                print "Matrix to multiply isn't properly formatted"
+                print "Format as a11,a12,...,a1n:a21,a22,...,a2n:...:am1,am2,...,amn"
+                usage()
+                sys.exit(3)
+
+    return (calculateInverse, calculateDeterminant, m1, r1, c1, m2, r2, c2)
 
 # Usage for this program
 def usage():
     print sys.argv[0] + " [options]"
     print "Matrix is required:"
-    print " -m MATRIX, --matrix MATRIX          Square matrix represented as a11,a12,...a1n,a21,a22,...,a2n,...,an1,an2,...ann"
+    print " -m MATRIX, --matrix=MATRIX          Square matrix formatted as a11,a12,...,a1n,a21,a22,...,a2n,...,an1,an2,...,ann"
+    print "                                     Non-square formatted as a11,a12,...,a1n:a21,a22,...,a2n:...:am1,am2,...,amn"
     print "Options:"
+    print " -p MATRIX --matrix-multiply=MATRIX  left multiply matrix provided by -m with the one provided by -p"
     print " -i --inverse                        calculate the inverse of matrix"
     print " -d --determinant                    calculate the determinant of matrix"
     print " -v --verbose-hint                   show verbose hints for Guass Jordan elimination method"
