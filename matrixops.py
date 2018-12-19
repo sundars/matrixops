@@ -342,12 +342,18 @@ def multiply(m1, m2, r1, c1=-1, r2=-1, c2=-1):
     for i in range(0, r1):
         for j in range(0, c2):
             e = 0
+            show_hint("Step %d: Multiply corresponding elements in row %d of 1st matrix and column %d of 2nd matrix and add up..."
+                      % (x, i+1, j+1), False, None, None, 0, 0, True)
+            s = ""
             for k in range(0, c1):
                 e += m1[i*c1+k]*m2[k*c2+j]
+                if k == c1-1:
+                    s += "%.2f * %.2f = %.2f" % (m1[i*c1+k], m2[k*c2+j], e)
+                else:
+                    s += "%.2f * %.2f + " % (m1[i*c1+k], m2[k*c2+j])
             matrix[x] = e
             x += 1
-            show_hint("Step %d: Multiply corresponding elements in row %d of 1st matrix and column %d of 2nd matrix and add up..."
-                      % (x, i+1, j+1), True, matrix, None, r1, c2)
+            show_hint(s, True, matrix, None, r1, c2)
 
     return matrix
 
@@ -438,7 +444,7 @@ def get_largest_size(m, rSize, cSize):
 # Input two matrices and their sizes: r1, c1, r2, c2
 # Either only r1 is specified in which case it is 2 square matrices of same size
 # Or all 4 sizes are specified
-def show_hint(s, prettyPrint, m1, m2, rSize1, cSize1=-1, rSize2=-1, cSize2=-1):
+def show_hint(s, prettyPrint, m1, m2, rSize1, cSize1=-1, rSize2=-1, cSize2=-1, tbc=False):
     if cSize1 == -1:
         # Two square matrices of same size
         cSize1 = rSize2 = cSize2 = rSize1
@@ -446,6 +452,7 @@ def show_hint(s, prettyPrint, m1, m2, rSize1, cSize1=-1, rSize2=-1, cSize2=-1):
     global showHint
     if showHint:
         raw_input(s)
+        if tbc: return
         if prettyPrint:
             if m2 is not None:
                 pretty_print_two_matrices(m1, m2, rSize1, cSize1, rSize2, cSize2)
