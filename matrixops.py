@@ -1,11 +1,12 @@
 import sys, getopt
 from matrix import Matrix
+from equation import LinearEquations
 
 step = 0
 showHint = False
 
 def main():
-    calculateInverse, calculateDeterminant, m1, m2 = parseArgs()
+    calculateInverse, calculateDeterminant, m1, m2, soe = parseArgs()
 
     print
     if m2 is not None:
@@ -16,14 +17,22 @@ def main():
         if calculateInverse: print "- Calculate inverse of first matrix"
         print "- Left multiply second matrix with the first matrix"
     else:
-        print "Input matrix is:"
-        m1.PrettyPrintMatrix()
+        if m1 is not None:
+            print "Input matrix is:"
+            m1.PrettyPrintMatrix()
+            print
+            if calculateDeterminant: print "- Calculate determinant of this matrix"
+            if calculateInverse: print "- Calculate inverse of this matrix"
+    print
+
+    if soe is not None:
+        print "System of Equations is:"
+        soe.PrettyPrintSystemOfEquations()
         print
-        if calculateDeterminant: print "- Calculate determinant of this matrix"
-        if calculateInverse: print "- Calculate inverse of this matrix"
+        print "- Find solution to this system of equations"
     print_space()
 
-    if (not calculateInverse and not calculateDeterminant and m2 is None):
+    if (not calculateInverse and not calculateDeterminant and m2 is None and s is None):
         print "No operation specified, nothing do... have a nice day"
         sys.exit(0)
 
@@ -89,6 +98,17 @@ def main():
             print(e)
             print_space()
 
+    if soe is not None:
+        try:
+            solutionMatrix = step_by_step_guass_jordan(soe.A, soe.B)
+            print "The solution to the system of equations is:"
+            Matrix.PrettyPrintTwoMatrices(soe.X, solutionMatrix)
+            print_space()
+
+        except Exception, e:
+            print(e)
+            print_space()
+
     sys.exit(0)
 
 # Exercise: Remove the code for this function and the ones for both row reduction functions below for students to implement
@@ -108,7 +128,7 @@ def step_by_step_guass_jordan(m1, m2=None):
     else:
         inverseMatrix = m2.MakeCopy()
 
-    print "Use Guass Jordan elimination and row-echelon form to find inverse of:"
+    print "Use Guass Jordan elimination and row-echelon form to find solution of or inverse of:"
     Matrix.PrettyPrintTwoMatrices(matrix, inverseMatrix)
     print_raw_input("Press Enter to continue...")
 
@@ -139,7 +159,7 @@ def row_reduce_down(m, inv, row):
         step += 1
         hint = 0
         show_hint("Step %d: Make the element in row %d, column %d non-zero. Next..." % (step, row+1, row+1))
-        for i in range(1, size):
+        for i in range(1, m.rSize):
             addRow = (row + i) % m.rSize
 
             if m.GetElement(addRow, row) != 0:
@@ -282,6 +302,7 @@ def print_raw_input(s):
 
 def parseArgs():
     global showHint
+    sarg = ""
     marg = ""
     parg = ""
     calculateInverse = False
@@ -289,7 +310,7 @@ def parseArgs():
 
     # Get the inputs/arguments
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 'vhidp:m:', ['matrix=', 'matrix-multiply='])
+        opts, args = getopt.getopt(sys.argv[1:], 'vhids:p:m:', ['matrix=', 'matrix-multiply=' 'system-of-equations='])
     except getopt.GetoptError:
         usage()
 
@@ -307,22 +328,29 @@ def parseArgs():
             marg = arg
         elif opt in ('-p', '--matrix-multiply'):
             parg = arg
+        elif opt in ('-s', '--system-of-equations'):
+            sarg = arg
         else:
             usage()
 
     try:
+        s = LinearEquations(sarg)
+
         # Parse the matrices
         m1 = Matrix(marg)
-        if (not m1.isValid):
-            raise Exception("-m MATRIX is a required argument")
+        if (not m1.isValid and not s.isValid):
+            raise Exception("either -m MATRIX or -s EQNS is a required argument")
 
         m2 = Matrix(parg)
+
+        if (not s.isValid): s = None
+        if (not m1.isValid): m1 = None
         if (not m2.isValid): m2 = None
 
         if (calculateInverse or calculateDeterminant) and (not m1.IsSquare()):
             raise Exception("Must specify square matrix to calculate inverse or determinant")
 
-        return (calculateInverse, calculateDeterminant, m1, m2)
+        return (calculateInverse, calculateDeterminant, m1, m2, s)
     except Exception, e:
         print(e)
         usage()
@@ -334,6 +362,8 @@ def usage():
     print "Matrix is required:"
     print " -m MATRIX, --matrix=MATRIX          Square matrix formatted as a11,a12,...,a1n,a21,a22,...,a2n,...,an1,an2,...,ann"
     print "                                     Non-square formatted as a11,a12,...,a1n:a21,a22,...,a2n:...:am1,am2,...,amn:"
+    print " -s EQNS --system-of-equations=EQNS  specify a system of equations to solve"
+    print "                                     Format is: 2*a+3*b+1*c=4:5*a-1*c=1:..."
     print "Options:"
     print " -p MATRIX --matrix-multiply=MATRIX  left multiply matrix provided by -m with the one provided by -p"
     print " -i --inverse                        calculate the inverse of matrix"

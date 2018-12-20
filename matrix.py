@@ -323,7 +323,7 @@ class Matrix():
             r.append(m1.elements[x])
 
         for i in range(0, m2.rSize):
-            x = column + i * m2.rSize
+            x = column + i * m2.cSize
             c.append(m2.elements[x])
 
         return (r, c)
