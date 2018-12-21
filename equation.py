@@ -58,23 +58,21 @@ class LinearEquations():
                 nm = lhs.find('-', c+1)
 
             equation['rhs'] = rhs
-
-            equation = OrderedDict(sorted(equation.items(), key=lambda t: t[0]))
             equations.append(equation)
 
         variables = []
-        varStr = ""
-        rhsStr = ""
         for equation in equations:
             for var in equation.keys():
                 if var not in variables and var is not 'rhs':
                     variables.append(var)
-                    varStr += "%s:" % var
 
-                if var is 'rhs':
-                    rhsStr += "%.2f:" % float(equation['rhs'])
+        variables.sort()
+        varStr = ""
+        for var in variables:
+            varStr += "%s:" % var
 
         coeffStr = ""
+        rhsStr = ""
         for equation in equations:
             for i in range(0, len(variables)):
                 var = variables[i]
@@ -85,6 +83,7 @@ class LinearEquations():
                 if i != len(variables)-1:
                     coeffStr += ","
 
+            rhsStr += "%.2f:" % float(equation['rhs'])
             coeffStr += ":"
 
         self.A = Matrix(coeffStr)

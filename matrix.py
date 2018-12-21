@@ -51,6 +51,10 @@ class Matrix():
     def SetElement(self, r, c, val):
         self.elements[r * self.cSize + c] = val
 
+    # Check if element value is val
+    def IsValue(self, r, c, val):
+        return math.fabs(self.elements[r * self.cSize + c] - val) < 0.001
+
     def MakeCopy(self):
         m = Matrix.CreateBlank(self.rSize, self.cSize)
         for i in range(0, m.rSize * m.cSize):
@@ -217,9 +221,9 @@ class Matrix():
             for j in range(0, self.cSize):
                 x = i * self.cSize + j
                 if i == j:
-                    if self.elements[x]-1.0 > 0.001: return False
+                    if math.fabs(self.elements[x]-1.0) > 0.001: return False
                 else:
-                    if self.elements[x]-0.0 > 0.001: return False
+                    if math.fabs(self.elements[x]-0.0) > 0.001: return False
 
         return True
 

@@ -1,4 +1,4 @@
-import sys, getopt
+import sys, getopt, math
 from matrix import Matrix
 from equation import LinearEquations
 
@@ -23,13 +23,14 @@ def main():
             print
             if calculateDeterminant: print "- Calculate determinant of this matrix"
             if calculateInverse: print "- Calculate inverse of this matrix"
-    print
 
     if soe is not None:
+        print
         print "System of Equations is:"
         soe.PrettyPrintSystemOfEquations()
         print
         print "- Find solution to this system of equations"
+
     print_space()
 
     if (not calculateInverse and not calculateDeterminant and m2 is None and soe is None):
@@ -58,7 +59,8 @@ def main():
             if inverseMatrix.IsEqual(inv):
                 print "Yay! got the correct inverse using Guass Jordan method"
             else:
-                print "Oops! got the wrong inverse using Guass Jordan method"
+                inv.PrettyPrintMatrix()
+                raise Exception("Oops! got the wrong inverse using Guass Jordan method")
 
             print "The inverse matrix is:"
             inverseMatrix.PrettyPrintMatrix()
@@ -158,19 +160,8 @@ def row_reduce_down(m, inv, row):
 
     # If the diagonal element is 0, need to add row with another whose corresponding column is non-zero
     # one such row is guaranteed to exist, otherwise determinant will be 0
-    if m.GetElement(row, row) == 0:
-        step += 1
-        hint = 0
-        show_hint("Step %d: Make the element in row %d, column %d non-zero. Next..." % (step, row+1, row+1))
-        for i in range(1, m.rSize):
-            addRow = (row + i) % m.rSize
-
-            if m.GetElement(addRow, row) != 0:
-                m.RowReduce(row, addRow, 1, -1)
-                inv.RowReduce(row, addRow, 1, -1)
-                hint += 1
-                show_hint("    Hint %d.%d: Add row %d to row %d. Next..." % (step, hint, addRow+1, row+1), True, m, inv)
-                break
+    if m.IsValue(row, row, 0):
+        add_row_to_make_diagonal_nonzero(m, inv, row)
 
     # Make all elements before the diagonal 0 by subtracting from rows above
     if row > 0:
@@ -179,7 +170,7 @@ def row_reduce_down(m, inv, row):
         show_hint("Step %d: Make all elements in row %d, before column %d equal 0. Next..." % (step, row+1, row+1))
         for i in range(0, row):
             element = m.GetElement(row, i)
-            if element != 0:
+            if not m.IsValue(row, i, 0):
                 if element != 1:
                     m.RowReduce(row, -1, 1/element, 1)
                     inv.RowReduce(row, -1, 1/element, 1)
@@ -196,7 +187,7 @@ def row_reduce_down(m, inv, row):
 
     # Make the diagonal element 1
     diagElement = m.GetElement(row, row)
-    if diagElement != 1:
+    if not m.IsValue(row, row, 1):
         step += 1
         hint = 0
         show_hint("Step %d: Make the element in row %d, column %d equal 1. Next..." % (step, row+1, row+1))
@@ -219,7 +210,7 @@ def row_reduce_up(m, inv, row):
     for i in range(m.rSize-1, row, -1):
         element = m.GetElement(row, i)
 
-        if element != 0:
+        if not m.IsValue(row, i, 0):
             m.RowReduce(row, i, 1, element)
             inv.RowReduce(row, i, 1, element)
             if element != 1:
@@ -234,6 +225,45 @@ def row_reduce_up(m, inv, row):
         print_raw_input("   Already 0, nothing to do...") 
 
     return m, inv
+
+# Row reduce to make diagnoal non-zero (may need to add 2 rows in some instances
+def add_row_to_make_diagonal_nonzero(m, inv, row):
+    global step
+    step += 1
+    hint = 0
+    show_hint("Step %d: Make the element in row %d, column %d non-zero. Next..." % (step, row+1, row+1))
+    for i in range(1, m.rSize):
+        ar = (row + i) % m.rSize
+
+        if not m.IsValue(ar, row, 0) and (not m.IsValue(row, ar, 0) or not m.IsValue(ar, ar, 1)):
+            m.RowReduce(row, ar, 1, -1)
+            inv.RowReduce(row, ar, 1, -1)
+            hint += 1
+            show_hint("    Hint %d.%d: Add row %d to row %d. Next..." % (step, hint, ar+1, row+1), True, m, inv)
+            return
+
+    # still zero
+    if m.IsValue(row, row, 0):
+        # Need to add 2 rows together
+        for i in range(1, m.rSize):
+            ar1 = (row + i) % m.rSize
+
+            if not m.IsValue(ar1, row, 0):
+                for j in range(i+1, m.rSize+i):
+                    ar2 = (row + j) % m.rSize
+
+                    if not m.IsValue(ar2, ar1, 0):
+                        # Add first row found
+                        m.RowReduce(row, ar1, 1, -1)
+                        inv.RowReduce(row, ar1, 1, -1)
+
+                        # Add second row found
+                        m.RowReduce(row, ar2, 1, -1)
+                        inv.RowReduce(row, ar2, 1, -1)
+                        hint += 1
+                        show_hint("    Hint %d.%d: Add rows %d and %d to row %d. Next..."
+                                   % (step, hint, ar1+1, ar2+1, row+1), True, m, inv)
+                        return
 
 # Inverse via minors, cofactors and adjugate - to double check Guass Jordan elimination
 def step_by_step_inverse_cofactors(m):
