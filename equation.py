@@ -25,6 +25,7 @@ class LinearEquations():
 
         # ignore the last ':'
         if eqns[self.nEquations-1] == "":
+            eqns.pop()
             self.nEquations -= 1
 
         # for each equation
@@ -84,15 +85,15 @@ class LinearEquations():
 
             coeffStr += ":"
 
-        self.nVariables = len(variables)
-        if self.nVariables != self.nEquations:
-            raise Exception("Numbers of variables (%d) and number of equations don't match (%d)" % self.nVariables, self.nEquations)
-
         self.A = Matrix(coeffStr)
         self.X = Matrix(varStr)
         self.B = Matrix(rhsStr)
-
         self.isValid = True
+        self.nVariables = len(variables)
+
+        if self.nVariables != self.nEquations:
+            raise Exception("Numbers of variables (%d) and number of equations don't match (%d)" % (self.nVariables, self.nEquations))
+
 
     def PrettyPrintSystemOfEquations(self):
         a = Matrix.CreateBlank(self.nEquations, self.nVariables)
@@ -117,7 +118,7 @@ class LinearEquations():
                 if x.elements[ix] == '-0.00':
                     x.elements[ix] = '0.00'
 
-        b = Matrix.CreateBlank(self.nVariables, 1)
+        b = Matrix.CreateBlank(self.nEquations, 1)
         for i in range (0, b.rSize):
             for j in range(0, b.cSize):
                 ix = i * b.cSize + j
@@ -132,41 +133,59 @@ class LinearEquations():
         just2 = x.GetLargestSize() + 1
         just3 = b.GetLargestSize() + 1
         for i in range(0, max(a.rSize, x.rSize, b.rSize)):
-            print "|",
+            if i < a.rSize:
+                print "|",
+            else:
+                print " ",
             for j in range(0, a.cSize):
                 ix = i * a.cSize + j
                 if i < a.rSize:
                     print a.elements[ix].rjust(just1),
                 else:
                     print ''.rjust(just1),
-            print "|",
+            if i < a.rSize:
+                print "|",
+            else:
+                print " ",
 
             if i == round(a.rSize/2):
                 print " * ",
             else:
                 print "   ",
 
-            print "|",
+            if i < x.rSize:
+                print "|",
+            else:
+                print " ",
             for j in range(0, x.cSize):
                 ix = i * x.cSize + j
                 if i < x.rSize:
                     print x.elements[ix].rjust(just2),
                 else:
                     print ''.rjust(just2),
-            print "|",
+            if i < x.rSize:
+                print "|",
+            else:
+                print " ",
 
             if i == round(a.rSize/2):
                 print " = ",
             else:
                 print "   ",
 
-            print "|",
+            if i < b.rSize:
+                print "|",
+            else:
+                print " ",
             for j in range(0, b.cSize):
                 ix = i * b.cSize + j
                 if i < b.rSize:
                     print b.elements[ix].rjust(just3),
                 else:
-                    print ''.rjust(just2),
-            print "|",
+                    print ''.rjust(just3),
+            if i < b.rSize:
+                print "|",
+            else:
+                print " ",
             print
 
