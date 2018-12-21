@@ -103,6 +103,12 @@ def main():
     if soe is not None:
         try:
             solutionMatrix = step_by_step_guass_jordan(soe.A, soe.B)
+
+            if soe.CheckSolution(solutionMatrix):
+                print("Yay! got the correct solution to the system of equations")
+            else:
+                raise Exception("Oops! got the wrong solution")
+
             print "The solution to the system of equations is:"
             Matrix.PrettyPrintTwoMatrices(soe.X, solutionMatrix)
             print_space()
