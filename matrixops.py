@@ -32,7 +32,7 @@ def main():
         print "- Find solution to this system of equations"
     print_space()
 
-    if (not calculateInverse and not calculateDeterminant and m2 is None and s is None):
+    if (not calculateInverse and not calculateDeterminant and m2 is None and soe is None):
         print "No operation specified, nothing do... have a nice day"
         sys.exit(0)
 
@@ -128,7 +128,10 @@ def step_by_step_guass_jordan(m1, m2=None):
     else:
         inverseMatrix = m2.MakeCopy()
 
-    print "Use Guass Jordan elimination and row-echelon form to find solution of or inverse of:"
+    if inverseMatrix.IsSquare():
+        print "Use Guass Jordan elimination and row-echelon form to find inverse of:"
+    else:
+        print "Use Guass Jordan elimination to find the solution to the system of linear equations:"
     Matrix.PrettyPrintTwoMatrices(matrix, inverseMatrix)
     print_raw_input("Press Enter to continue...")
 
@@ -188,6 +191,9 @@ def row_reduce_down(m, inv, row):
                 hint += 1
                 show_hint("    Hint %d.%d: Subtract row %d from row %d. Next..." % (step, hint, i+1, row+1), True, m, inv)
 
+        if showHint and hint == 0:
+            print_raw_input("    Already 0, nothing to do...") 
+
     # Make the diagonal element 1
     diagElement = m.GetElement(row, row)
     if diagElement != 1:
@@ -223,6 +229,9 @@ def row_reduce_up(m, inv, row):
             else:
                 hint += 1
                 show_hint("    Hint %d.%d: Subtract row %d from row %d. Next..." % (step, hint, i+1, row+1), True, m, inv)
+
+    if showHint and hint == 0:
+        print_raw_input("   Already 0, nothing to do...") 
 
     return m, inv
 
