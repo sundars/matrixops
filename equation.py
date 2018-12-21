@@ -95,6 +95,11 @@ class LinearEquations():
         if self.nVariables != self.nEquations:
             raise Exception("Numbers of variables (%d) and number of equations don't match (%d)" % (self.nVariables, self.nEquations))
 
+    def CheckSolution(self, soln):
+        if soln.rSize != self.nVariables and soln.cSize != 1:
+            raise Exception("Solution matrix should be a %dx1 matrix" % self.nVariables)
+
+        return self.A.Multiply(soln).IsEqual(self.B)
 
     def PrettyPrintSystemOfEquations(self):
         a = Matrix.CreateBlank(self.nEquations, self.nVariables)
