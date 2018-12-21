@@ -58,6 +58,8 @@ class LinearEquations():
                 nm = lhs.find('-', c+1)
 
             equation['rhs'] = rhs
+
+            equation = OrderedDict(sorted(equation.items(), key=lambda t: t[0]))
             equations.append(equation)
 
         variables = []
