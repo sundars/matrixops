@@ -87,7 +87,7 @@ class Fraction():
             factors.append(2)
             num /= 2
 
-        for i in range(3, int(math.sqrt(num)), 2):
+        for i in range(3, int(math.sqrt(num))+1, 2):
             while num % i == 0:
                 factors.append(i)
                 num /= i
@@ -98,8 +98,8 @@ class Fraction():
 
     @classmethod
     def LCM(cls, n1, n2):
-        factors1 = Fraction.PrimeFactors(min(n1, n2))
-        factors2 = Fraction.PrimeFactors(max(n1, n2))
+        factors1 = Fraction.PrimeFactors(n1)
+        factors2 = Fraction.PrimeFactors(n2)
 
         lcm = 1
         remaining = []
@@ -120,12 +120,13 @@ class Fraction():
 
     @classmethod
     def GCD(cls, n1, n2):
-        factors1 = Fraction.PrimeFactors(min(n1, n2))
-        factors2 = Fraction.PrimeFactors(max(n1, n2))
+        factors1 = Fraction.PrimeFactors(n1)
+        factors2 = Fraction.PrimeFactors(n2)
 
         commonFactor = 1
         for f in factors1:
             if f in factors2:
                 commonFactor *= f
+                factors2.remove(f)
 
         return commonFactor
