@@ -1,4 +1,4 @@
-import __builtin__
+from util import *
 import sys, getopt, math
 from matrix import Matrix
 from equation import LinearEquations
@@ -120,7 +120,7 @@ def main():
 
     sys.exit(0)
 
-# Exercise: Remove the code for this function and the ones for both row reduction functions below for students to implement
+# Exercise: Implement Gauss Jordan elimination to calculate inverse or solution to system of linear equations
 # This function should return
 #    1. The inverse of m1 if m2 is None or
 #    2. Row reduced m2 (used for systems of equations)
@@ -196,9 +196,9 @@ def step_by_step_multiply(m1, m2):
             for k in range(0, m1.cSize):
                 element = row[k] * column[k] + element
                 if k == m1.cSize - 1:
-                    s += "%s * %s = %s\n" % (repr(round(row[k], 2)), repr(round(column[k], 2)), repr(round(element, 2)))
+                    s += "%s * %s = %s\n" % (str(row[k]), str(column[k]), str(element))
                 else:
-                    s += "%s * %s + " % (repr(round(row[k], 2)), repr(round(column[k], 2)))
+                    s += "%s * %s + " % (str(row[k]), str(column[k]))
             matrix.SetElement(i, j, element)
             show_hint(s, True, matrix, None)
 
@@ -217,12 +217,6 @@ def show_hint(s, prettyPrint=False, m1=None, m2=None):
             m1.PrettyPrintMatrix()
 
         print_raw_input("Press Enter to continue...")
-
-def round(number, to):
-    if isinstance(number, float):
-        return __builtin__.round(number, to)
-
-    return number
 
 def print_space():
     print

@@ -1,3 +1,4 @@
+from util import *
 import math
 from fraction import Fraction
 
@@ -266,16 +267,7 @@ class Matrix():
         for i in range(0, self.rSize):
             for j in range(0, self.cSize):
                 x = i * self.cSize + j
-                if self.keepFraction:
-                    try:
-                        m.elements[x] = self.elements[x].FractionStr()
-                    except Exception, e:
-                        m.elements[x] = self.elements[x]
-                else:
-                    try:
-                        m.elements[x] = "%.2f" % self.elements[x]
-                    except Exception, e:
-                        m.elements[x] = self.elements[x]
+                m.elements[x] = str(self.elements[x])
 
                 if m.elements[x] == '-0.00':
                     m.elements[x] = '0.00'
@@ -294,12 +286,7 @@ class Matrix():
         for i in range (0, matrix1.rSize):
             for j in range(0, matrix1.cSize):
                 x = i * matrix1.cSize + j
-                if matrix1.keepFraction:
-                    m1.elements[x] = matrix1.elements[x].FractionStr()
-                elif type(matrix1.elements[x]) is str:
-                    m1.elements[x] = matrix1.elements[x]
-                else:
-                    m1.elements[x] = "%.2f" % matrix1.elements[x]
+                m1.elements[x] = str(matrix1.elements[x])
 
                 if m1.elements[x] == '-0.00':
                     m1.elements[x] = '0.00'
@@ -308,12 +295,7 @@ class Matrix():
         for i in range (0, matrix2.rSize):
             for j in range(0, matrix2.cSize):
                 x = i * matrix2.cSize + j
-                if matrix2.keepFraction:
-                    m2.elements[x] = matrix2.elements[x].FractionStr()
-                elif type(matrix2.elements[x]) is str:
-                    m2.elements[x] = matrix2.elements[x]
-                else:
-                    m2.elements[x] = "%.2f" % matrix2.elements[x]
+                m2.elements[x] = str(matrix2.elements[x])
 
                 if m2.elements[x] == '-0.00':
                     m2.elements[x] = '0.00'

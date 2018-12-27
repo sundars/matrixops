@@ -1,4 +1,4 @@
-import __builtin__
+from util import *
 import sys, getopt, math
 from matrix import Matrix
 from equation import LinearEquations
@@ -182,8 +182,7 @@ def row_reduce_down(m, inv, row):
                     m.RowReduce(row, -1, element ** -1, 1)
                     inv.RowReduce(row, -1, element ** -1, 1)
                     hint += 1
-                    show_hint("    Hint %d.%d: Divide row %d by %s. Next..."
-                                   % (step, hint, row+1, repr(round(element,2))), True, m, inv)
+                    show_hint("    Hint %d.%d: Divide row %d by %s. Next..." % (step, hint, row+1, str(element)), True, m, inv)
 
                 m.RowReduce(row, i, 1, 1)
                 inv.RowReduce(row, i, 1, 1)
@@ -203,8 +202,7 @@ def row_reduce_down(m, inv, row):
         m.RowReduce(row, -1, diagElement ** -1, 1)
         inv.RowReduce(row, -1, diagElement ** -1, 1)
         hint += 1
-        show_hint("    Hint %d.%d: Divide row %d by %s. Next..."
-                       % (step, hint, row+1, repr(round(diagElement, 2))), True, m, inv)
+        show_hint("    Hint %d.%d: Divide row %d by %s. Next..." % (step, hint, row+1, str(diagElement)), True, m, inv)
 
     return m, inv
 
@@ -225,7 +223,7 @@ def row_reduce_up(m, inv, row):
             if element != 1:
                 hint += 1
                 show_hint("    Hint %d.%d: Multiply row %d by %s and subtract from row %d. Next..."
-                               % (step, hint, i+1, repr(round(element,2)), row+1), True, m, inv)
+                               % (step, hint, i+1, str(element), row+1), True, m, inv)
             else:
                 hint += 1
                 show_hint("    Hint %d.%d: Subtract row %d from row %d. Next..." % (step, hint, i+1, row+1), True, m, inv)
@@ -317,9 +315,9 @@ def step_by_step_multiply(m1, m2):
             for k in range(0, m1.cSize):
                 element = row[k] * column[k] + element
                 if k == m1.cSize - 1:
-                    s += "%s * %s = %s\n" % (repr(round(row[k], 2)), repr(round(column[k], 2)), repr(round(element, 2)))
+                    s += "%s * %s = %s\n" % (str(row[k]), str(column[k]), str(element))
                 else:
-                    s += "%s * %s + " % (repr(round(row[k], 2)), repr(round(column[k], 2)))
+                    s += "%s * %s + " % (str(row[k]), str(column[k]))
             matrix.SetElement(i, j, element)
             show_hint(s, True, matrix, None)
 
@@ -338,12 +336,6 @@ def show_hint(s, prettyPrint=False, m1=None, m2=None):
             m1.PrettyPrintMatrix()
 
         print_raw_input("Press Enter to continue...")
-
-def round(number, to):
-    if isinstance(number, float):
-        return __builtin__.round(number, to)
-
-    return number
 
 def print_space():
     print

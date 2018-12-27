@@ -1,7 +1,7 @@
+from util import *
 import math
 from matrix import Matrix
 from collections import OrderedDict
-from fraction import Fraction
 
 class LinearEquations():
     A = None
@@ -79,13 +79,13 @@ class LinearEquations():
             for i in range(0, len(variables)):
                 var = variables[i]
                 if var in equation.keys():
-                    coeffStr += "%.2f" % float(equation[var])
+                    coeffStr += str(float(equation[var]))
                 else:
-                    coeffStr += "%.2f" % float(0)
+                    coeffStr += str(float(0))
                 if i != len(variables)-1:
                     coeffStr += ","
 
-            rhsStr += "%.2f:" % float(equation['rhs'])
+            rhsStr += str(float(equation['rhs']))
             coeffStr += ":"
 
         self.A = Matrix(coeffStr, keepFraction)
@@ -109,16 +109,7 @@ class LinearEquations():
         for i in range (0, a.rSize):
             for j in range(0, a.cSize):
                 ix = i * a.cSize + j
-                if self.A.keepFraction:
-                    try:
-                        a.elements[ix] = self.A.elements[ix].FractionStr()
-                    except Exception, e:
-                        a.elements[ix] = self.A.elements[ix]
-                else:
-                    try:
-                        a.elements[ix] = "%.2f" % self.A.elements[ix]
-                    except Exception, e:
-                        a.elements[ix] = self.A.elements[ix]
+                a.elements[ix] = str(self.A.elements[ix])
 
                 if a.elements[ix] == '-0.00':
                     a.elements[ix] = '0.00'
@@ -127,16 +118,7 @@ class LinearEquations():
         for i in range (0, x.rSize):
             for j in range(0, x.cSize):
                 ix = i * x.cSize + j
-                if self.X.keepFraction:
-                    try:
-                        x.elements[ix] = self.X.elements[ix].FractionStr()
-                    except Exception, e:
-                        x.elements[ix] = self.X.elements[ix]
-                else:
-                    try:
-                        x.elements[ix] = "%.2f" % self.X.elements[ix]
-                    except Exception, e:
-                        x.elements[ix] = self.X.elements[ix]
+                x.elements[ix] = str(self.X.elements[ix])
 
                 if x.elements[ix] == '-0.00':
                     x.elements[ix] = '0.00'
@@ -145,16 +127,7 @@ class LinearEquations():
         for i in range (0, b.rSize):
             for j in range(0, b.cSize):
                 ix = i * b.cSize + j
-                if self.B.keepFraction:
-                    try:
-                        b.elements[ix] = self.B.elements[ix].FractionStr()
-                    except Exception, e:
-                        b.elements[ix] = self.B.elements[ix]
-                else:
-                    try:
-                        b.elements[ix] = "%.2f" % self.B.elements[ix]
-                    except Exception, e:
-                        b.elements[ix] = self.B.elements[ix]
+                b.elements[ix] = str(self.B.elements[ix])
 
                 if b.elements[ix] == '-0.00':
                     b.elements[ix] = '0.00'
