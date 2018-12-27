@@ -1,6 +1,7 @@
-import sys, getopt
+import sys, getopt, math
 from matrix import Matrix
 from equation import LinearEquations
+from fraction import Fraction
 
 step = 0
 showHint = False
@@ -23,13 +24,14 @@ def main():
             print
             if calculateDeterminant: print "- Calculate determinant of this matrix"
             if calculateInverse: print "- Calculate inverse of this matrix"
-    print
 
     if soe is not None:
+        print
         print "System of Equations is:"
         soe.PrettyPrintSystemOfEquations()
         print
         print "- Find solution to this system of equations"
+
     print_space()
 
     if (not calculateInverse and not calculateDeterminant and m2 is None and soe is None):
@@ -58,7 +60,8 @@ def main():
             if inverseMatrix.IsEqual(inv):
                 print "Yay! got the correct inverse using Guass Jordan method"
             else:
-                print "Oops! got the wrong inverse using Guass Jordan method"
+                inv.PrettyPrintMatrix()
+                raise Exception("Oops! got the wrong inverse using Guass Jordan method")
 
             print "The inverse matrix is:"
             inverseMatrix.PrettyPrintMatrix()
@@ -101,6 +104,12 @@ def main():
     if soe is not None:
         try:
             solutionMatrix = step_by_step_guass_jordan(soe.A, soe.B)
+
+            if soe.CheckSolution(solutionMatrix):
+                print("Yay! got the correct solution to the system of equations")
+            else:
+                raise Exception("Oops! got the wrong solution")
+
             print "The solution to the system of equations is:"
             Matrix.PrettyPrintTwoMatrices(soe.X, solutionMatrix)
             print_space()
@@ -123,7 +132,7 @@ def step_by_step_guass_jordan(m1, m2=None):
     # Make a copy - python is effectively pass by reference
     matrix = m1.MakeCopy()
     if m2 is None:
-        inverseMatrix = Matrix.GetIdentityMatrix(matrix.rSize)
+        inverseMatrix = Matrix.GetIdentityMatrix(matrix.rSize, matrix.keepFraction)
     else:
         inverseMatrix = m2.MakeCopy()
 
@@ -158,7 +167,7 @@ def step_by_step_inverse_cofactors(m):
     show_hint("Step 3: Transpose the cofactors matrix to get Adjugate Matrix. Next...", True, adjugate)
 
     det = m.Determinant()
-    adjugate.ScalarMultiply(1/det)
+    adjugate.ScalarMultiply(det, True)
     inv = adjugate.MakeCopy()
     show_hint("Step 4: Divide adjugate by determinant to get inverse Matrix. Next...", True, inv)
 
@@ -172,7 +181,7 @@ def step_by_step_inverse_cofactors(m):
 # step by step multiplication of two matrices
 def step_by_step_multiply(m1, m2):
     global step
-    matrix = Matrix.CreateBlank(m1.rSize, m2.cSize)
+    matrix = Matrix.CreateBlank(m1.rSize, m2.cSize, m1.keepFraction)
 
     step = 0
     for i in range(0, m1.rSize):
@@ -185,11 +194,17 @@ def step_by_step_multiply(m1, m2):
             s = ""
             element = 0
             for k in range(0, m1.cSize):
-                element += row[k] * column[k]
+                element = row[k] * column[k] + element
                 if k == m1.cSize - 1:
-                    s += "%.2f * %.2f = %.2f\n" % (row[k], column[k], element)
+                    try:
+                        s += "%.2f * %.2f = %.2f\n" % (row[k], column[k], element)
+                    except Exception, e:
+                        s += "%s * %s = %s\n" % (row[k].FractionStr(), column[k].FractionStr(), element.FractionStr())
                 else:
-                    s += "%.2f * %.2f + " % (row[k], column[k])
+                    try:
+                        s += "%.2f * %.2f + " % (row[k], column[k])
+                    except Exception, e:
+                        s += "%s * %s + " % (row[k].FractionStr(), column[k].FractionStr())
             matrix.SetElement(i, j, element)
             show_hint(s, True, matrix, None)
 
@@ -225,10 +240,11 @@ def parseArgs():
     parg = ""
     calculateInverse = False
     calculateDeterminant = False
+    keepFraction = False
 
     # Get the inputs/arguments
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 'vhids:p:m:', ['matrix=', 'matrix-multiply=' 'system-of-equations='])
+        opts, args = getopt.getopt(sys.argv[1:], 'vhidfs:p:m:', ['matrix=', 'matrix-multiply=' 'system-of-equations='])
     except getopt.GetoptError:
         usage()
 
@@ -242,6 +258,8 @@ def parseArgs():
             calculateDeterminant = True
         elif opt in ('-v', '--verbose-hints'):
             showHint = True
+        elif opt in ('-f', '--use-fraction'):
+            keepFraction = True
         elif opt in ('-m', '--matrix'):
             marg = arg
         elif opt in ('-p', '--matrix-multiply'):
@@ -252,14 +270,14 @@ def parseArgs():
             usage()
 
     try:
-        s = LinearEquations(sarg)
+        s = LinearEquations(sarg, keepFraction)
 
         # Parse the matrices
-        m1 = Matrix(marg)
+        m1 = Matrix(marg, keepFraction)
         if (not m1.isValid and not s.isValid):
             raise Exception("either -m MATRIX or -s EQNS is a required argument")
 
-        m2 = Matrix(parg)
+        m2 = Matrix(parg, keepFraction)
 
         if (not s.isValid): s = None
         if (not m1.isValid): m1 = None
@@ -287,6 +305,7 @@ def usage():
     print " -i --inverse                        calculate the inverse of matrix"
     print " -d --determinant                    calculate the determinant of matrix"
     print " -v --verbose-hint                   show verbose hints for Guass Jordan elimination method"
+    print " -f --use-fraction                   Use fraction instead of decimals"
     print " -h, --help                          show this help message and exit"
     sys.exit(1)
 

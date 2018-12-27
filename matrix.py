@@ -1,16 +1,19 @@
 import math
+from fraction import Fraction
 
 class Matrix():
     elements = []
     rSize = 0
     cSize = 0
     isValid = False
+    keepFraction = False
 
-    def __init__(self, s):
+    def __init__(self, s, keepFraction=False):
         self.elements = []
         self.rSize = 0
         self.cSize = 0
         self.isValid = False
+        self.keepFraction = keepFraction
 
         if s is not "":
             rows = s.split(':')
@@ -18,7 +21,10 @@ class Matrix():
                 # Assume square matrix
                 for element in s.split(','):
                     try:
-                        self.elements.append(float(element))
+                        if keepFraction:
+                            self.elements.append(Fraction.FromDecimal(float(element)))
+                        else:
+                            self.elements.append(float(element))
                     except Exception, e:
                         self.elements.append(element)
 
@@ -33,7 +39,10 @@ class Matrix():
                 for i in range(0, self.rSize):
                     for element in rows[i].split(','):
                         try:
-                            self.elements.append(float(element))
+                            if keepFraction:
+                                self.elements.append(Fraction.FromDecimal(float(element)))
+                            else:
+                                self.elements.append(float(element))
                         except Exception, e:
                             self.elements.append(element)
 
@@ -42,6 +51,9 @@ class Matrix():
                     raise Exception("Matrix isn't properly formatted\nFormat as a11,a12,...,a1n:a21,a22,...,a2n:...:am1,am2,...,amn:")
 
             self.isValid = True
+
+    def __str__(self):
+        self.PrettyPrintMatrix()
 
     # Return the element in rth row cth column
     def GetElement(self, r, c):
@@ -53,10 +65,13 @@ class Matrix():
 
     # Check if element value is val
     def IsValue(self, r, c, val):
-        return math.fabs(self.elements[r * self.cSize + c] - val) < 0.001
+        try:
+            return math.fabs(self.elements[r * self.cSize + c] - val) < 0.001
+        except Exception, e:
+            return self.elements[r * self.cSize + c] == val
 
     def MakeCopy(self):
-        m = Matrix.CreateBlank(self.rSize, self.cSize)
+        m = Matrix.CreateBlank(self.rSize, self.cSize, self.keepFraction)
         for i in range(0, m.rSize * m.cSize):
             m.elements[i] = self.elements[i]
 
@@ -76,7 +91,7 @@ class Matrix():
         if not self.CanMultiply(m):
             raise Exception("Cannot multiply these two matrices")
 
-        p = Matrix.CreateBlank(self.rSize, m.cSize)
+        p = Matrix.CreateBlank(self.rSize, m.cSize, self.keepFraction)
         x = 0
         for i in range(0, self.rSize):
             for j in range(0, m.cSize):
@@ -84,7 +99,7 @@ class Matrix():
                 for k in range(0, self.cSize):
                     selfIndex = i * self.cSize + k
                     mIndex = k * m.cSize + j
-                    element += self.elements[selfIndex] * m.elements[mIndex]
+                    element = self.elements[selfIndex] * m.elements[mIndex] + element
 
                 x = i * m.cSize + j
                 p.elements[x] = element
@@ -102,7 +117,7 @@ class Matrix():
         value = 0
         sign = 1
         for i in range(0, self.rSize):
-            value += sign * self.elements[i] * self.GetSubmatrix(0, i).Determinant()
+            value = (self.elements[i] * self.GetSubmatrix(0, i).Determinant() * sign) + value
             sign *= -1
 
         return value
@@ -112,7 +127,7 @@ class Matrix():
         if not self.IsSquare():
             raise Exception("Cannot calculate matrix of minors of non-square matrix")
 
-        minors = Matrix.CreateBlank(self.rSize, self.cSize)
+        minors = Matrix.CreateBlank(self.rSize, self.cSize, self.keepFraction)
         for i in range(0, self.rSize):
             for j in range(0, self.cSize):
                 minor = self.GetSubmatrix(i, j).Determinant()
@@ -126,12 +141,12 @@ class Matrix():
         if not self.IsSquare():
             raise Exception("Cannot calculate matrix of cofactors of non-square matrix")
 
-        cofactors = Matrix.CreateBlank(self.rSize, self.cSize)
+        cofactors = Matrix.CreateBlank(self.rSize, self.cSize, self.keepFraction)
         sign1 = sign2 = 1
         for i in range(0, self.rSize):
             for j in range(0, self.cSize):
                 x = i * self.cSize + j
-                cofactors.elements[x] = sign1 * sign2 * self.elements[x]
+                cofactors.elements[x] = self.elements[x] * sign1 * sign2
                 sign2 *= -1
             sign2 = 1
             sign1 *= -1
@@ -148,14 +163,14 @@ class Matrix():
         for i in range(0, self.cSize):
             x1 = r1 * self.cSize + i
             if r2 == -1:
-                self.elements[x1] *= m1
+                self.elements[x1] = self.elements[x1] * m1
             else:
                 x2 = r2 * self.cSize + i
                 self.elements[x1] = self.elements[x1] * m1 - self.elements[x2] * m2
 
     # Transpose of a matrix
     def Transpose(self):
-        t = Matrix.CreateBlank(self.cSize, self.rSize)
+        t = Matrix.CreateBlank(self.cSize, self.rSize, self.keepFraction)
 
         for i in range(0, self.rSize):
             for j in range(0, self.cSize):
@@ -175,7 +190,7 @@ class Matrix():
             raise Exception("Inverse doesn't exist for matrix")
 
         inv = self.MatrixOfMinors().MatrixOfCofactors().Transpose()
-        inv.ScalarMultiply(1/det)
+        inv.ScalarMultiply(det, True)
         return inv
 
     # Any 2 matrices
@@ -187,14 +202,16 @@ class Matrix():
             return False
 
         for i in range(0, len(self.elements)):
-            if math.fabs(self.elements[i] - m.elements[i]) > 0.001:
-                return False
+            try:
+                if math.fabs(self.elements[i] - m.elements[i]) > 0.001: return False
+            except Exception, e:
+                if self.elements[i] != m.elements[i]: return False
 
         return True
 
     # Remove row and column from this matrix and return remaining matrix
     def GetSubmatrix(self, row, column):
-        s = Matrix.CreateBlank(self.rSize-1, self.cSize-1)
+        s = Matrix.CreateBlank(self.rSize-1, self.cSize-1, self.keepFraction)
         sx = 0;
         for i in range(0, self.rSize):
             for j in range(0, self.cSize):
@@ -206,24 +223,32 @@ class Matrix():
         return s
 
     # Multiply matrix with a scalar
-    def ScalarMultiply(self, val):
+    def ScalarMultiply(self, val, reciprocal=False):
         for i in range(0, self.rSize):
             for j in range(0, self.cSize):
                 x = i * self.cSize + j
-                self.elements[x] *= val
+                if reciprocal:
+                    self.elements[x] = self.elements[x] / val
+                else:
+                    self.elements[x] = self.elements[x] * val
 
     # Returns true if it is an identity (and therefore square) matrix
     def IsIdentityMatrix(self):
-        if not self.IsSquare():
-            return False
+        if not self.IsSquare(): return False
 
         for i in range(0, self.rSize):
             for j in range(0, self.cSize):
                 x = i * self.cSize + j
                 if i == j:
-                    if math.fabs(self.elements[x]-1.0) > 0.001: return False
+                    try:
+                        if math.fabs(self.elements[x]-1.0) > 0.001: return False
+                    except Exception, e:
+                        if self.elements[x] != 1: return False
                 else:
-                    if math.fabs(self.elements[x]-0.0) > 0.001: return False
+                    try:
+                        if math.fabs(self.elements[x]-0.0) > 0.001: return False
+                    except Exception, e:
+                        if self.elements[x] != 0: return False
 
         return True
 
@@ -240,14 +265,21 @@ class Matrix():
 
     # Pretty print a matrix, aligning rows and columns
     def PrettyPrintMatrix(self):
-        m = Matrix.CreateBlank(self.rSize, self.cSize)
+        m = Matrix.CreateBlank(self.rSize, self.cSize, self.keepFraction)
         for i in range(0, self.rSize):
             for j in range(0, self.cSize):
                 x = i * self.cSize + j
-                if type(self.elements[x]) is str:
-                    m.elements[x] = self.elements[x]
+                if self.keepFraction:
+                    try:
+                        m.elements[x] = self.elements[x].FractionStr()
+                    except Exception, e:
+                        m.elements[x] = self.elements[x]
                 else:
-                    m.elements[x] = "%.2f" % self.elements[x]
+                    try:
+                        m.elements[x] = "%.2f" % self.elements[x]
+                    except Exception, e:
+                        m.elements[x] = self.elements[x]
+
                 if m.elements[x] == '-0.00':
                     m.elements[x] = '0.00'
 
@@ -261,25 +293,31 @@ class Matrix():
     # Pretty print two  matrices side by side
     @classmethod
     def PrettyPrintTwoMatrices(cls, matrix1, matrix2):
-        m1 = Matrix.CreateBlank(matrix1.rSize, matrix1.cSize)
+        m1 = Matrix.CreateBlank(matrix1.rSize, matrix1.cSize, matrix1.keepFraction)
         for i in range (0, matrix1.rSize):
             for j in range(0, matrix1.cSize):
                 x = i * matrix1.cSize + j
-                if type(matrix1.elements[x]) is str:
+                if matrix1.keepFraction:
+                    m1.elements[x] = matrix1.elements[x].FractionStr()
+                elif type(matrix1.elements[x]) is str:
                     m1.elements[x] = matrix1.elements[x]
                 else:
                     m1.elements[x] = "%.2f" % matrix1.elements[x]
+
                 if m1.elements[x] == '-0.00':
                     m1.elements[x] = '0.00'
 
-        m2 = Matrix.CreateBlank(matrix2.rSize, matrix2.cSize)
+        m2 = Matrix.CreateBlank(matrix2.rSize, matrix2.cSize, matrix2.keepFraction)
         for i in range (0, matrix2.rSize):
             for j in range(0, matrix2.cSize):
                 x = i * matrix2.cSize + j
-                if type(matrix2.elements[x]) is str:
+                if matrix2.keepFraction:
+                    m2.elements[x] = matrix2.elements[x].FractionStr()
+                elif type(matrix2.elements[x]) is str:
                     m2.elements[x] = matrix2.elements[x]
                 else:
                     m2.elements[x] = "%.2f" % matrix2.elements[x]
+
                 if m2.elements[x] == '-0.00':
                     m2.elements[x] = '0.00'
 
@@ -304,16 +342,20 @@ class Matrix():
 
     # Returns a square matrix
     @classmethod
-    def GetIdentityMatrix(cls, size):
-        m = Matrix.CreateBlank(size, size)
+    def GetIdentityMatrix(cls, size, keepFraction=False):
+        m = Matrix.CreateBlank(size, size, keepFraction)
 
         for i in range(0, size):
             for j in range (0, size):
                 x = i * size + j
                 if (i == j):
                     m.elements[x] = 1.0
+                    if keepFraction:
+                        m.elements[x] = Fraction('1/1')
                 else:
                     m.elements[x] = 0.0
+                    if keepFraction:
+                        m.elements[x] = Fraction('0/1')
 
         return m
 
@@ -334,7 +376,7 @@ class Matrix():
 
     # Creates a blank rxc matrix with '...' as placeholders
     @classmethod
-    def CreateBlank(cls, rSize, cSize):
+    def CreateBlank(cls, rSize, cSize, keepFraction=False):
         if rSize == 0 or cSize == 0:
             return None
 
@@ -347,4 +389,4 @@ class Matrix():
                 else:
                     b += ','
 
-        return Matrix(b)
+        return Matrix(b, keepFraction)

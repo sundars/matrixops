@@ -4,7 +4,6 @@ from collections import OrderedDict
 class Fraction():
     numerator = 0
     denominator = 1
-    sign = -1
     value = float(0/1)
 
     def __init__(self, fString):
@@ -20,6 +19,9 @@ class Fraction():
 
         if self.denominator == 0:
             raise Exception("Fraction %d/%d is indeterminate" % (self.numerator, self.denominator))
+
+        if self.numerator == 0:
+            return
 
         if self.denominator < 0:
             self.denominator *= -1
@@ -43,38 +45,76 @@ class Fraction():
         n = self.numerator * f.numerator
         return Fraction("%d/%d" % (n, d))
 
-    def __truediv__(self, f):
+    def __div__(self, f):
         d = self.denominator * f.numerator
         n = self.numerator * f.denominator
         return Fraction("%d/%d" % (n, d))
 
     def __lt__(self, f):
-        return self.value < f.value
+        try:
+            return self.value < f.value
+        except Exception, e:
+            return self.value < f
 
     def __le__(self, f):
-        return self.value <= f.value
+        try:
+            return self.value <= f.value
+        except Exception, e:
+            return self.value <= f
 
     def __gt__(self, f):
-        return self.value > f.value
+        try:
+            return self.value > f.value
+        except Exception, e:
+            return self.value > f
 
     def __ge__(self, f):
-        return self.value >= f.value
+        try:
+            return self.value >= f.value
+        except Exception, e:
+            return self.value >= f
 
     def __eq__(self, f):
-        return self.value == f.value
+        try:
+            return self.value == f.value
+        except Exception, e:
+            return self.value == f
+
+    def __ne__(self, f):
+        try:
+            return self.value != f.value
+        except Exception, e:
+            return self.value != f
+
+    def __repr__(self):
+        return self.FractionStr()
+
+    def __str__(self):
+        return self.FractionStr()
+
+    def Reciprocal(self):
+        return Fraction("%d/%d" % (self.denominator, self.numerator))
 
     def Simplify(self):
-        gcd = Fraction.GCD(self.numerator, self.denominator)
+        gcd = Fraction.GCD(math.fabs(self.numerator), self.denominator)
         self.numerator /= gcd
         self.denominator /= gcd
 
     def PrettyPrintFraction(self):
         print self.numerator,
-        if self.denominator == 1:
+        if self.numerator == 0 or self.denominator == 1:
             print
         else:
             print "/",
             print self.denominator
+
+    def FractionStr(self):
+        s = "%d" % self.numerator
+        if self.numerator != 0 and self.denominator != 1:
+            s += "/"
+            s += "%d" % self.denominator
+
+        return s
 
     @classmethod
     def PrimeFactors(cls, num):
@@ -130,3 +170,28 @@ class Fraction():
                 factors2.remove(f)
 
         return commonFactor
+
+    @classmethod
+    def FromDecimal(cls, decimal):
+        continuedFraction = []
+        whole, remaining = (int(decimal), float("0.%s" % str(decimal)[(len(str(int(decimal)))+1):]))
+        continuedFraction.append(whole)
+
+        iter = 0
+        while round(remaining,6) > 0.001 and iter < 16:
+            reciprocal = 1/remaining
+            whole, remaining = (int(reciprocal), float("0.%s" % str(reciprocal)[(len(str(int(reciprocal)))+1):]))
+            continuedFraction.append(whole)
+            iter += 1
+
+        # Unpack the continued fraction
+        pf = Fraction('0/1')
+        for i in range(len(continuedFraction), 0, -1):
+            if i == 1:
+                return pf + continuedFraction[i-1]
+
+            if i == len(continuedFraction):
+                pf = Fraction("1/%d" % continuedFraction[i-1])
+
+            else:
+                pf = Fraction('1/1') / (pf + continuedFraction[i-1])
