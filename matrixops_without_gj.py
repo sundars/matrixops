@@ -1,7 +1,7 @@
+import __builtin__
 import sys, getopt, math
 from matrix import Matrix
 from equation import LinearEquations
-from fraction import Fraction
 
 step = 0
 showHint = False
@@ -167,7 +167,7 @@ def step_by_step_inverse_cofactors(m):
     show_hint("Step 3: Transpose the cofactors matrix to get Adjugate Matrix. Next...", True, adjugate)
 
     det = m.Determinant()
-    adjugate.ScalarMultiply(det, True)
+    adjugate.ScalarMultiply(det ** -1)
     inv = adjugate.MakeCopy()
     show_hint("Step 4: Divide adjugate by determinant to get inverse Matrix. Next...", True, inv)
 
@@ -196,15 +196,9 @@ def step_by_step_multiply(m1, m2):
             for k in range(0, m1.cSize):
                 element = row[k] * column[k] + element
                 if k == m1.cSize - 1:
-                    try:
-                        s += "%.2f * %.2f = %.2f\n" % (row[k], column[k], element)
-                    except Exception, e:
-                        s += "%s * %s = %s\n" % (row[k].FractionStr(), column[k].FractionStr(), element.FractionStr())
+                    s += "%s * %s = %s\n" % (repr(round(row[k], 2)), repr(round(column[k], 2)), repr(round(element, 2)))
                 else:
-                    try:
-                        s += "%.2f * %.2f + " % (row[k], column[k])
-                    except Exception, e:
-                        s += "%s * %s + " % (row[k].FractionStr(), column[k].FractionStr())
+                    s += "%s * %s + " % (repr(round(row[k], 2)), repr(round(column[k], 2)))
             matrix.SetElement(i, j, element)
             show_hint(s, True, matrix, None)
 
@@ -223,6 +217,12 @@ def show_hint(s, prettyPrint=False, m1=None, m2=None):
             m1.PrettyPrintMatrix()
 
         print_raw_input("Press Enter to continue...")
+
+def round(number, to):
+    if isinstance(number, float):
+        return __builtin__.round(number, to)
+
+    return number
 
 def print_space():
     print

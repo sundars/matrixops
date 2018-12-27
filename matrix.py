@@ -190,7 +190,7 @@ class Matrix():
             raise Exception("Inverse doesn't exist for matrix")
 
         inv = self.MatrixOfMinors().MatrixOfCofactors().Transpose()
-        inv.ScalarMultiply(det, True)
+        inv.ScalarMultiply(det ** -1)
         return inv
 
     # Any 2 matrices
@@ -223,14 +223,11 @@ class Matrix():
         return s
 
     # Multiply matrix with a scalar
-    def ScalarMultiply(self, val, reciprocal=False):
+    def ScalarMultiply(self, val):
         for i in range(0, self.rSize):
             for j in range(0, self.cSize):
                 x = i * self.cSize + j
-                if reciprocal:
-                    self.elements[x] = self.elements[x] / val
-                else:
-                    self.elements[x] = self.elements[x] * val
+                self.elements[x] = self.elements[x] * val
 
     # Returns true if it is an identity (and therefore square) matrix
     def IsIdentityMatrix(self):

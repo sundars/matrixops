@@ -1,7 +1,7 @@
+import __builtin__
 import sys, getopt, math
 from matrix import Matrix
 from equation import LinearEquations
-from fraction import Fraction
 
 step = 0
 showHint = False
@@ -179,19 +179,11 @@ def row_reduce_down(m, inv, row):
             element = m.GetElement(row, i)
             if not m.IsValue(row, i, 0):
                 if element != 1:
-                    try:
-                        multiplier = 1/element
-                    except Exception, e:
-                        multiplier = element.Reciprocal()
-
-                    m.RowReduce(row, -1, multiplier, 1)
-                    inv.RowReduce(row, -1, multiplier, 1)
+                    m.RowReduce(row, -1, element ** -1, 1)
+                    inv.RowReduce(row, -1, element ** -1, 1)
                     hint += 1
-                    try:
-                        show_hint("    Hint %d.%d: Divide row %d by %.2f. Next..." % (step, hint, row+1, element), True, m, inv)
-                    except Exception, e:
-                        show_hint("    Hint %d.%d: Divide row %d by %s. Next..."
-                                  % (step, hint, row+1, element.FractionStr()), True, m, inv)
+                    show_hint("    Hint %d.%d: Divide row %d by %s. Next..."
+                                   % (step, hint, row+1, repr(round(element,2))), True, m, inv)
 
                 m.RowReduce(row, i, 1, 1)
                 inv.RowReduce(row, i, 1, 1)
@@ -208,19 +200,11 @@ def row_reduce_down(m, inv, row):
         hint = 0
         show_hint("Step %d: Make the element in row %d, column %d equal 1. Next..." % (step, row+1, row+1))
 
-        try:
-            multiplier = 1/diagElement
-        except Exception, e:
-            multiplier = diagElement.Reciprocal()
-
-        m.RowReduce(row, -1, multiplier, 1)
-        inv.RowReduce(row, -1, multiplier, 1)
+        m.RowReduce(row, -1, diagElement ** -1, 1)
+        inv.RowReduce(row, -1, diagElement ** -1, 1)
         hint += 1
-        try:
-            show_hint("    Hint %d.%d: Divide row %d by %.2f. Next..." % (step, hint, row+1, diagElement), True, m, inv)
-        except Exception, e:
-            show_hint("    Hint %d.%d: Divide row %d by %s. Next..."
-                      % (step, hint, row+1, diagElement.FractionStr()), True, m, inv)
+        show_hint("    Hint %d.%d: Divide row %d by %s. Next..."
+                       % (step, hint, row+1, repr(round(diagElement, 2))), True, m, inv)
 
     return m, inv
 
@@ -240,12 +224,8 @@ def row_reduce_up(m, inv, row):
             inv.RowReduce(row, i, 1, element)
             if element != 1:
                 hint += 1
-                try:
-                    show_hint("    Hint %d.%d: Multiply row %d by: %.2f and subtract from row %d. Next..."
-                                   % (step, hint, i+1, element, row+1), True, m, inv)
-                except Exception, e:
-                    show_hint("    Hint %d.%d: Multiply row %d by: %s and subtract from row %d. Next..."
-                                   % (step, hint, i+1, element.FractionStr(), row+1), True, m, inv)
+                show_hint("    Hint %d.%d: Multiply row %d by %s and subtract from row %d. Next..."
+                               % (step, hint, i+1, repr(round(element,2)), row+1), True, m, inv)
             else:
                 hint += 1
                 show_hint("    Hint %d.%d: Subtract row %d from row %d. Next..." % (step, hint, i+1, row+1), True, m, inv)
@@ -308,7 +288,7 @@ def step_by_step_inverse_cofactors(m):
     show_hint("Step 3: Transpose the cofactors matrix to get Adjugate Matrix. Next...", True, adjugate)
 
     det = m.Determinant()
-    adjugate.ScalarMultiply(det, True)
+    adjugate.ScalarMultiply(det ** -1)
     inv = adjugate.MakeCopy()
     show_hint("Step 4: Divide adjugate by determinant to get inverse Matrix. Next...", True, inv)
 
@@ -337,15 +317,9 @@ def step_by_step_multiply(m1, m2):
             for k in range(0, m1.cSize):
                 element = row[k] * column[k] + element
                 if k == m1.cSize - 1:
-                    try:
-                        s += "%.2f * %.2f = %.2f\n" % (row[k], column[k], element)
-                    except Exception, e:
-                        s += "%s * %s = %s\n" % (row[k].FractionStr(), column[k].FractionStr(), element.FractionStr())
+                    s += "%s * %s = %s\n" % (repr(round(row[k], 2)), repr(round(column[k], 2)), repr(round(element, 2)))
                 else:
-                    try:
-                        s += "%.2f * %.2f + " % (row[k], column[k])
-                    except Exception, e:
-                        s += "%s * %s + " % (row[k].FractionStr(), column[k].FractionStr())
+                    s += "%s * %s + " % (repr(round(row[k], 2)), repr(round(column[k], 2)))
             matrix.SetElement(i, j, element)
             show_hint(s, True, matrix, None)
 
@@ -364,6 +338,12 @@ def show_hint(s, prettyPrint=False, m1=None, m2=None):
             m1.PrettyPrintMatrix()
 
         print_raw_input("Press Enter to continue...")
+
+def round(number, to):
+    if isinstance(number, float):
+        return __builtin__.round(number, to)
+
+    return number
 
 def print_space():
     print

@@ -50,6 +50,17 @@ class Fraction():
         n = self.numerator * f.denominator
         return Fraction("%d/%d" % (n, d))
 
+    def __pow__(self, power):
+        p = math.fabs(power)
+        d = self.denominator ** p
+        n = self.numerator ** p
+        f = Fraction("%d/%d" % (n, d))
+
+        if power < 0:
+            return f.Reciprocal()
+
+        return f
+
     def __lt__(self, f):
         try:
             return self.value < f.value
@@ -91,6 +102,12 @@ class Fraction():
 
     def __str__(self):
         return self.FractionStr()
+
+    def __float__(self):
+        return self.value
+
+    def __round__(self, n=0):
+        return self
 
     def Reciprocal(self):
         return Fraction("%d/%d" % (self.denominator, self.numerator))
