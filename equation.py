@@ -86,6 +86,7 @@ class LinearEquations():
                     coeffStr += ","
 
             rhsStr += str(float(equation['rhs']))
+            rhsStr += ":"
             coeffStr += ":"
 
         self.A = Matrix(coeffStr, keepFraction)
