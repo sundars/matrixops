@@ -1,6 +1,6 @@
 import __builtin__
 
-# Override round
+# Override str
 def str(number):
     if isinstance(number, float):
         return '%.2f' % number
