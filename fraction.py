@@ -191,7 +191,8 @@ class Fraction():
     @classmethod
     def FromDecimal(cls, decimal):
         continuedFraction = []
-        whole, remaining = (int(decimal), float("0.%s" % str(decimal)[(len(str(int(decimal)))+1):]))
+        d, sign = (math.fabs(decimal), int(not decimal or decimal/math.fabs(decimal)))
+        whole, remaining = (int(d), float("0.%s" % str(d)[(len(str(int(d)))+1):]))
         continuedFraction.append(whole)
 
         iter = 0
@@ -205,7 +206,7 @@ class Fraction():
         pf = Fraction('0/1')
         for i in range(len(continuedFraction), 0, -1):
             if i == 1:
-                return pf + continuedFraction[i-1]
+                return (pf + continuedFraction[i-1]) * sign
 
             if i == len(continuedFraction):
                 pf = Fraction("1/%d" % continuedFraction[i-1])
