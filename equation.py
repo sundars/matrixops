@@ -79,9 +79,9 @@ class LinearEquations():
             for i in range(0, len(variables)):
                 var = variables[i]
                 if var in equation.keys():
-                    coeffStr += str(float(equation[var]))
+                    coeffStr += equation[var]
                 else:
-                    coeffStr += str(float(0))
+                    coeffStr += '0'
                 if i != len(variables)-1:
                     coeffStr += ","
 
