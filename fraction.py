@@ -190,19 +190,12 @@ class Fraction():
 
     @classmethod
     def FromDecimal(cls, decimal):
-        continuedFraction = []
-        d, sign = (math.fabs(decimal), int(not decimal or decimal/math.fabs(decimal)))
-        whole, remaining = (int(d), float("0.%s" % str(d)[(len(str(int(d)))+1):]))
-        continuedFraction.append(whole)
+        continuedFraction, sign = Fraction.GenerateContinuedFraction(decimal)
+        return Fraction.UnpackContinuedFraction(continuedFraction, sign)
 
-        iter = 0
-        while round(remaining,6) > 0.001 and iter < 16:
-            reciprocal = 1/remaining
-            whole, remaining = (int(reciprocal), float("0.%s" % str(reciprocal)[(len(str(int(reciprocal)))+1):]))
-            continuedFraction.append(whole)
-            iter += 1
-
-        # Unpack the continued fraction
+    # Unpack the continued fraction
+    @classmethod
+    def UnpackContinuedFraction(cls, continuedFraction, sign):
         pf = Fraction('0/1')
         for i in range(len(continuedFraction), 0, -1):
             if i == 1:
@@ -213,3 +206,69 @@ class Fraction():
 
             else:
                 pf = Fraction('1/1') / (pf + continuedFraction[i-1])
+
+    # Generate a continued fraction from a decimal
+    @classmethod
+    def GenerateContinuedFraction(cls, decimal):
+        continuedFraction = []
+        d, sign = (math.fabs(decimal), int(not decimal or decimal/math.fabs(decimal)))
+        whole, remaining = (int(d), float("0.%s" % str(d)[(len(str(int(d)))+1):]))
+        continuedFraction.append(whole)
+
+        loop = 0
+        while round(remaining,6) > 0.001 and loop < 16:
+            reciprocal = 1/remaining
+            whole, remaining = (int(reciprocal), float("0.%s" % str(reciprocal)[(len(str(int(reciprocal)))+1):]))
+            continuedFraction.append(whole)
+            loop += 1
+
+        return continuedFraction, sign
+
+    @classmethod
+    def PrintContinuedFraction(cls, decimal):
+        continuedFraction, sign = Fraction.GenerateContinuedFraction(decimal)
+        # Set the count for number of spaces
+        count = 0
+        # Print "-1 * (" if it is a negative number
+        if sign < 0:
+            print "-1 * (",
+            count += 7
+
+        for i in range(0, len(continuedFraction)):
+            # Print the next number of the continued Fraction
+            print continuedFraction[i],
+
+            # If last number, print a new line and we are done
+            if i+1 == len(continuedFraction):
+                if sign < 0: print ")"  # if a negative number print closing ")" before new line
+                print
+                return
+
+            # Print "+ 1" and a new line
+            print " + ",
+            print 1
+
+            # Increment count by the length of the continued fraction and 4 more for the + 1
+            count += len(str(continuedFraction[i]))+4
+
+            # Create a space string of length count and print and increment count by 1
+            s = ""
+            for j in range(0, count): 
+                s += " "
+            print s,
+            count += 1
+
+            # Calculate length of the fraction line it is length of next number plus 6 (for "+ 1"), unless last but one
+            if i+2 == len(continuedFraction):
+                countL = len(str(continuedFraction[i+1]))
+            else:
+                countL = len(str(continuedFraction[i+1]))+6
+
+            # Generate the fraction line and print with a new line
+            l = ""
+            for j in range(0, countL):
+                l += "-"
+            print l
+
+            # Then print as many spaces as needed and loop back to next number
+            print s,
