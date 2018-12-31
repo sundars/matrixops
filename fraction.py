@@ -113,7 +113,7 @@ class Fraction():
         return Fraction("%d/%d" % (self.denominator, self.numerator))
 
     def Simplify(self):
-        gcd = Fraction.EuclidGCD(abs(self.numerator), self.denominator)
+        gcd = Fraction.GCD(abs(self.numerator), self.denominator)
         self.numerator /= gcd
         self.denominator /= gcd
 
@@ -139,6 +139,14 @@ class Fraction():
         Fraction.PrettyPrintContinuedFraction(continuedFraction, self.numerator/abs(self.numerator))
 
     @classmethod
+    def LCM(cls, n1, n2):
+        return Fraction.EuclidLCM(n1, n2)
+
+    @classmethod
+    def GCD(cls, n1, n2):
+        return Fraction.EuclidGCD(n1, n2)
+
+    @classmethod
     def PrimeFactors(cls, num):
         if num <= 0:
             raise Exception("Only numbers greater than 0 please")
@@ -157,14 +165,6 @@ class Fraction():
         if num != 1: factors.append(num)
 
         return factors
-
-    @classmethod
-    def LCM(cls, n1, n2):
-        return Fraction.EuclidLCM(n1, n2)
-
-    @classmethod
-    def GCD(cls, n1, n2):
-        return Fraction.EuclidGCD(n1, n2)
 
     @classmethod
     def PrimeFactorsLCM(cls, n1, n2):
