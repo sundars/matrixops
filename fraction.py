@@ -210,7 +210,7 @@ class Fraction():
         if (max(n1, n2) % min(n1, n2) == 0):
             return min(n1, n2)
 
-        return Fraction.EuclidGCD(min(n1, n2), max(n1, n2) - (max(n1, n2)/min(n1, n2))*min(n1, n2))
+        return Fraction.EuclidGCD(min(n1, n2), max(n1, n2) % min(n1, n2))
 
     @classmethod
     def EuclidContinuedFraction(cls, n1, n2, cF):
