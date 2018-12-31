@@ -249,7 +249,7 @@ class Fraction():
         continuedFraction.append(whole)
 
         loop = 0
-        while round(remaining, 10) > 0.00001 and loop < 16:
+        while round(remaining, 8) > 0.0001 and loop < 16:
             reciprocal = 1/remaining
             whole, remaining = (int(reciprocal), float("0.%s" % str(reciprocal)[(len(str(int(reciprocal)))+1):]))
             continuedFraction.append(whole)
