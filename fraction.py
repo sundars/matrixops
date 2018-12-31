@@ -219,7 +219,7 @@ class Fraction():
             return
 
         cF.append(max(n1, n2)/min(n1, n2))
-        Fraction.EuclidContinuedFraction(min(n1, n2), max(n1, n2) - (max(n1, n2)/min(n1, n2))*min(n1, n2), cF)
+        Fraction.EuclidContinuedFraction(min(n1, n2), max(n1, n2) % min(n1, n2))
 
     @classmethod
     def FromDecimal(cls, decimal):
