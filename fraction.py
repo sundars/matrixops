@@ -113,7 +113,7 @@ class Fraction():
         return Fraction("%d/%d" % (self.denominator, self.numerator))
 
     def Simplify(self):
-        gcd = Fraction.GCD(math.fabs(self.numerator), self.denominator)
+        gcd = Fraction.EuclidGCD(abs(self.numerator), self.denominator)
         self.numerator /= gcd
         self.denominator /= gcd
 
@@ -132,6 +132,11 @@ class Fraction():
             s += "%d" % self.denominator
 
         return s
+
+    def ContinuedFraction(self):
+        continuedFraction = [self.numerator/self.denominator]
+        Fraction.EuclidContinuedFraction(self.numerator, self.denominator, continuedFraction)
+        Fraction.PrettyPrintContinuedFraction(continuedFraction, self.numerator/abs(self.numerator))
 
     @classmethod
     def PrimeFactors(cls, num):
@@ -155,6 +160,14 @@ class Fraction():
 
     @classmethod
     def LCM(cls, n1, n2):
+        return Fraction.EuclidLCM(n1, n2)
+
+    @classmethod
+    def GCD(cls, n1, n2):
+        return Fraction.EuclidGCD(n1, n2)
+
+    @classmethod
+    def PrimeFactorsLCM(cls, n1, n2):
         factors1 = Fraction.PrimeFactors(n1)
         factors2 = Fraction.PrimeFactors(n2)
 
@@ -176,7 +189,7 @@ class Fraction():
         return lcm
 
     @classmethod
-    def GCD(cls, n1, n2):
+    def PrimeFactorsGCD(cls, n1, n2):
         factors1 = Fraction.PrimeFactors(n1)
         factors2 = Fraction.PrimeFactors(n2)
 
@@ -189,13 +202,33 @@ class Fraction():
         return commonFactor
 
     @classmethod
+    def EuclidLCM(cls, n1, n2):
+        return (n1 * n2)/Fraction.EuclidGCD(n1, n2)
+
+    @classmethod
+    def EuclidGCD(cls, n1, n2):
+        if (max(n1, n2) % min(n1, n2) == 0):
+            return min(n1, n2)
+
+        return Fraction.EuclidGCD(min(n1, n2), max(n1, n2) - (max(n1, n2)/min(n1, n2))*min(n1, n2))
+
+    @classmethod
+    def EuclidContinuedFraction(cls, n1, n2, cF):
+        if (max(n1, n2) % min(n1, n2) == 0):
+            cF.append(n1/n2)
+            return
+
+        cF.append(max(n1, n2)/min(n1, n2))
+        Fraction.EuclidContinuedFraction(min(n1, n2), max(n1, n2) - (max(n1, n2)/min(n1, n2))*min(n1, n2), cF)
+
+    @classmethod
     def FromDecimal(cls, decimal):
         continuedFraction, sign = Fraction.GenerateContinuedFraction(decimal)
-        return Fraction.UnpackContinuedFraction(continuedFraction, sign)
+        return Fraction.RollupContinuedFraction(continuedFraction, sign)
 
-    # Unpack the continued fraction
+    # Rollup the continued fraction
     @classmethod
-    def UnpackContinuedFraction(cls, continuedFraction, sign):
+    def RollupContinuedFraction(cls, continuedFraction, sign):
         pf = Fraction('0/1')
         for i in range(len(continuedFraction), 0, -1):
             if i == 1:
@@ -216,7 +249,7 @@ class Fraction():
         continuedFraction.append(whole)
 
         loop = 0
-        while round(remaining,6) > 0.001 and loop < 16:
+        while round(remaining, 10) > 0.00001 and loop < 16:
             reciprocal = 1/remaining
             whole, remaining = (int(reciprocal), float("0.%s" % str(reciprocal)[(len(str(int(reciprocal)))+1):]))
             continuedFraction.append(whole)
@@ -227,6 +260,10 @@ class Fraction():
     @classmethod
     def PrintContinuedFraction(cls, decimal):
         continuedFraction, sign = Fraction.GenerateContinuedFraction(decimal)
+        Fraction.PrettyPrintContinuedFraction(continuedFraction, sign)
+
+    @classmethod
+    def PrettyPrintContinuedFraction(cls, continuedFraction, sign):
         # Set the count for number of spaces
         count = 0
         # Print "-1 * (" if it is a negative number
