@@ -15,22 +15,22 @@
 
 void PrintContinuedFraction(long *continuedFraction, int sign) {
     if (sign < 0)
-        printf("Continued Fraction: -[");
+        printf("Continued Fraction: -[%ld", continuedFraction[0]);
     else
-        printf("Continued Fraction: [");
-    for (int i=0; i<CF_MAX_SIZE; i++) {
-        if (continuedFraction[i] == -1)
-            printf("-, ");
-        else
-            if (i == 0)
-                printf("%ld; ", continuedFraction[i]);
+        printf("Continued Fraction: [%ld", continuedFraction[0]);
+
+    for (int i=1; i<CF_MAX_SIZE; i++) {
+        if (continuedFraction[i] != -1) {
+            if (i == 1)
+                printf("; %ld", continuedFraction[i]);
             else
-                printf("%ld, ", continuedFraction[i]);
+                printf(", %ld", continuedFraction[i]);
+        }
     }
     if (continuedFraction[CF_MAX_SIZE] == -1)
-            printf("-]\n");
+            printf("]\n");
     else
-        printf("%ld]\n", continuedFraction[CF_MAX_SIZE]);
+        printf(", %ld, ...(truncated)]\n", continuedFraction[CF_MAX_SIZE]);
 }
 
 long GCD(long m, long n) {
