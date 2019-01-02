@@ -18,7 +18,10 @@ void PrintContinuedFraction(long *continuedFraction) {
         if (continuedFraction[i] == -1)
             printf("-, ");
         else
-            printf("%ld, ", continuedFraction[i]);
+            if (i == 0)
+                printf("%ld; ", continuedFraction[i]);
+            else
+                printf("%ld, ", continuedFraction[i]);
     }
     if (continuedFraction[CF_MAX_SIZE] == -1)
             printf("-]\n");
