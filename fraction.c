@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <string.h>
 
 #define CF_MAX_SIZE 16
 
@@ -12,8 +13,11 @@
 
 #define ACCURACY 0.00001
 
-void PrintContinuedFraction(long *continuedFraction) {
-    printf("Continued Fraction: [");
+void PrintContinuedFraction(long *continuedFraction, int sign) {
+    if (sign < 0)
+        printf("Continued Fraction: -[");
+    else
+        printf("Continued Fraction: [");
     for (int i=0; i<CF_MAX_SIZE; i++) {
         if (continuedFraction[i] == -1)
             printf("-, ");
@@ -66,10 +70,13 @@ long* RollupContinuedFraction(long *continuedFraction, int sign) {
         if (continuedFraction[i] == -1) continue;
 
         if (i == 0) {
-            if (continuedFraction[i] != 0) fraction[0] += continuedFraction[i] * fraction[1];
-            int gcd = GCD(fraction[0], fraction[1]);
-            fraction[0] /= gcd * sign;
-            fraction[1] /= gcd;
+            if (continuedFraction[i] != 0) {
+                fraction[0] += continuedFraction[i] * fraction[1];
+                int gcd = GCD(fraction[0], fraction[1]);
+                fraction[0] /= gcd;
+                fraction[1] /= gcd;
+            }
+            fraction[0] *= sign;
             free(continuedFraction);
             return fraction;
         }
@@ -96,17 +103,112 @@ long* FromDecimal(double d) {
     int sign = 1;
     if (d < 0) sign = -1;
     long *continuedFraction = GenerateContinuedFraction(d * (double) sign);
-    PrintContinuedFraction(continuedFraction);
+    PrintContinuedFraction(continuedFraction, sign);
     return RollupContinuedFraction(continuedFraction, sign);
 }
 
+double ConvertToDecimal(char *s) {
+    int lensqrt = strlen("sqrt");
+    int lencurt = strlen("curt");
+
+    if (strcmp(s, "pi") == 0) {
+        printf("pi is irrational. So fractional form doesn't exist but here is an approximation\n");
+        return (double) M_PI;
+    }
+
+    else if (strcmp(s, "e") == 0) {
+        printf("e is irrational. So fractional form doesn't exist but here is an approximation\n");
+        return (double) exp(1);
+    }
+
+    else if (strcmp(s, "golden") == 0) {
+        printf("The golden ratio is irrational. So fractional form doesn't exist but here is an approximation\n");
+        return (double) (1+pow(5,0.5))/2;
+    }
+
+    else if (strcmp(s, "golden ratio") == 0) {
+        printf("The golden ratio is irrational. So fractional form doesn't exist but here is an approximation\n");
+        return (double) (1+pow(5,0.5))/2;
+    }
+
+    else if (strcmp(s, "golden_ratio") == 0) {
+        printf("The golden ratio is irrational. So fractional form doesn't exist but here is an approximation\n");
+        return (double) (1+pow(5,0.5))/2;
+    }
+
+    else if (strcmp(s, "gr") == 0) {
+        printf("The golden ratio is irrational. So fractional form doesn't exist but here is an approximation\n");
+        return (double) (1+pow(5,0.5))/2;
+    }
+
+    else if (strcmp(s, "phi") == 0) {
+        printf("The golden ratio is irrational. So fractional form doesn't exist but here is an approximation\n");
+        return (double) (1+pow(5,0.5))/2;
+    }
+
+    else if (strcmp(s, "little golden") == 0) {
+        printf("The little golden ratio is irrational. So fractional form doesn't exist but here is an approximation\n");
+        return (double) (1-pow(5,0.5))/2;
+    }
+
+    else if (strcmp(s, "little golden ratio") == 0) {
+        printf("The little golden ratio is irrational. So fractional form doesn't exist but here is an approximation\n");
+        return (double) (1-pow(5,0.5))/2;
+    }
+
+    else if (strcmp(s, "little golden_ratio") == 0) {
+        printf("The little golden ratio is irrational. So fractional form doesn't exist but here is an approximation\n");
+        return (double) (1-pow(5,0.5))/2;
+    }
+
+    else if (strcmp(s, "lgr") == 0) {
+        printf("The little golden ratio is irrational. So fractional form doesn't exist but here is an approximation\n");
+        return (double) (1-pow(5,0.5))/2;
+    }
+
+    else if (strcmp(s, "little phi") == 0) {
+        printf("The little golden ratio is irrational. So fractional form doesn't exist but here is an approximation\n");
+        return (double) (1-pow(5,0.5))/2;
+    }
+
+    else if (strcmp(s, "i^i") == 0) {
+        printf("Yeah, i^i is real but irrational. So fractional form doesn't exist but here is an approximation\n");
+        return (double) pow(exp(1), -1*M_PI/2);
+    }
+
+    else if (strncmp(s, "sqrt", lensqrt) == 0) {
+        long n;
+        sscanf(s+lensqrt, "%ld", &n);
+        double d = pow(n, 0.5);
+        if (d - (long) d > 0)
+            printf("sqrt(%ld) is irrational. So fractional form doesn't exist but here is an approximation\n", n);
+        return d;
+    }
+
+    else if (strncmp(s, "curt", lensqrt) == 0) {
+        long n;
+        sscanf(s+lencurt, "%ld", &n);
+        double d = pow(n, ((double) 1/(double) 3));
+        if (d - (long) d > 0)
+            printf("cuberoot(%ld) is irrational. So fractional form doesn't exist but here is an approximation\n", n);
+        return d;
+    }
+
+    else {
+        double d;
+        sscanf(s, "%lf", &d);
+        return d;
+    }
+}
+
 int main() {
+    char dStr[256];
     double decimal;
     long *fraction;
 
     printf("Enter decimal to convert to fraction: ");
-    scanf("%lf", &decimal);
-
+    scanf("%s", dStr);
+    decimal = ConvertToDecimal(dStr);
     fraction = FromDecimal(decimal);
     printf("Fraction: %ld/%ld\n", fraction[0], fraction[1]);
     free(fraction);
