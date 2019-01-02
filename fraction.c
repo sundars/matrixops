@@ -13,7 +13,7 @@
 #define ACCURACY 0.00001
 
 void PrintContinuedFraction(long *continuedFraction) {
-    printf("Continued Fraction = [");
+    printf("Continued Fraction: [");
     for (int i=0; i<CF_MAX_SIZE; i++) {
         if (continuedFraction[i] == -1)
             printf("-, ");
@@ -108,7 +108,7 @@ int main() {
     scanf("%lf", &decimal);
 
     fraction = FromDecimal(decimal);
-    printf("Fraction is %ld/%ld\n", fraction[0], fraction[1]);
+    printf("Fraction: %ld/%ld\n", fraction[0], fraction[1]);
     free(fraction);
 
     return 0;
