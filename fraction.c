@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 #include <string.h>
+#include <math.h>
 
 #define CF_MAX_SIZE 16
 
@@ -12,6 +12,29 @@
     (m < n ? m : n)
 
 #define ACCURACY 0.00001
+
+long factorial(n) {
+    if (n == 1 || n == 0)
+        return 1;
+
+    return n*factorial(n-1);
+}
+
+double e() {
+    double d = (double) 2;
+    for (int i=2; i<=CF_MAX_SIZE; i++)
+        d += (double) 1/(double) factorial(i);
+
+    return d;
+}
+
+double pi() {
+    double d = (double) 0;
+    for (int i=0; i<=CF_MAX_SIZE; i++)
+        d += (double)(factorial(4*i)*(1103+26390*i))/(double)(pow(factorial(i), 4)*pow(396,4*i));
+
+    return (double) 9801 / (d * (double) 2 * (double) pow(2, 0.5));
+}
 
 void PrintContinuedFraction(long *continuedFraction, int sign) {
     if (sign < 0)
@@ -113,12 +136,12 @@ double ConvertToDecimal(char *s) {
 
     if (strcmp(s, "pi") == 0) {
         printf("pi is irrational. So fractional form doesn't exist but here is an approximation\n");
-        return (double) M_PI;
+        return (double) pi();
     }
 
     else if (strcmp(s, "e") == 0) {
         printf("e is irrational. So fractional form doesn't exist but here is an approximation\n");
-        return (double) exp(1);
+        return (double) e();
     }
 
     else if (strcmp(s, "golden") == 0) {
@@ -173,7 +196,7 @@ double ConvertToDecimal(char *s) {
 
     else if (strcmp(s, "i^i") == 0) {
         printf("Yeah, i^i is real but irrational. So fractional form doesn't exist but here is an approximation\n");
-        return (double) pow(exp(1), -1*M_PI/2);
+        return (double) pow(e(), -1*pi()/2);
     }
 
     else if (strncmp(s, "sqrt", lensqrt) == 0) {

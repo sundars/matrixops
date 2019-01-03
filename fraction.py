@@ -271,6 +271,10 @@ class Fraction():
             print "-1 * (",
             count += 7
 
+        if continuedFraction[len(continuedFraction)-1] == 1:
+            continuedFraction[len(continuedFraction)-2] += 1
+            continuedFraction.pop(len(continuedFraction)-1)
+
         for i in range(0, len(continuedFraction)):
             # Print the next number of the continued Fraction
             print continuedFraction[i],
