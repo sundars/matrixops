@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <unistd.h>
 
 #define CF_MAX_SIZE 16
 
@@ -218,9 +219,50 @@ double ConvertToDecimal(char *s) {
     }
 
     else {
-        double d;
-        sscanf(s, "%lf", &d);
-        return d;
+        int pipe1[2];
+        int pipe2[2];
+        pipe(pipe1);
+        pipe(pipe2);
+
+        pid_t parent = getpid();
+        pid_t child = fork();
+        if (child == -1) {
+            printf("Something went wrong...exiting\n");
+            exit(-1);
+        }
+        else if (child > 0) {
+            // parent
+            close(pipe1[0]);
+            close(pipe2[1]);
+
+            char _s[strlen(s)+2];
+            sprintf(_s, "%s\n", s);
+            write(pipe1[1], _s, sizeof(_s)-1);
+
+            char result[256];
+            read(pipe2[0], result, sizeof(result));
+
+            close(pipe1[1]);
+            close(pipe2[0]);
+
+            int status;
+            waitpid(child, &status, 0);
+
+            double d;
+            sscanf(result, "%lf", &d);
+            return d;
+        }
+        else {
+            close(pipe1[1]);
+            close(pipe2[0]);
+            dup2(pipe1[0], 0);
+            dup2(pipe2[1], 1);
+            close(pipe1[0]);
+            close(pipe2[1]);
+
+            execlp("bc", "bc", "-l", NULL);
+            exit(-1);
+        }
     }
 }
 
