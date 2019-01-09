@@ -6,4 +6,4 @@ bld/fraction.o: fraction.c
 	gcc -c fraction.c -o bld/fraction.o
 
 clean:
-	rm -rf bld/*
+	rm -rf bld
