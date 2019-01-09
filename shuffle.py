@@ -38,9 +38,9 @@ def main():
 
         print_space()
 
-        print("After %d shuffles of Normal shuffle, number of cards correctly predicted on average is %f" % (nCount, nResult))
-        print("After %d shuffles of Riffle shuffle, number of cards correctly predicted on average is %f" % (rCount, rResult))
-        print("After %d shuffles of Perfect shuffle, number of cards correctly predicted on average is %f" % (pCount, pResult))
+        print("After %d shuffles of Normal shuffle, number of cards correctly predicted on average is %.2f" % (nCount, nResult))
+        print("After %d shuffles of Riffle shuffle, number of cards correctly predicted on average is %.2f" % (rCount, rResult))
+        print("After %d shuffles of Perfect shuffle, number of cards correctly predicted on average is %.2f" % (pCount, pResult))
 
     else:
         print "Running a %s shuffle operation %d times on deck:" % (shuffleType, numShuffles)
@@ -125,7 +125,7 @@ def interactive(deck, shuffleType, numShuffles, numTests):
             else:
                 result = method_to_call(deck)
 
-            print("Number of cards correctly predicted in the shuffled deck is: %lf" % result)
+            print("Number of cards correctly predicted in the shuffled deck is: %.2f" % result)
             print_space()
 
         elif command == 'ShuffleMany':
