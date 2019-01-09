@@ -87,7 +87,7 @@ class Cards():
         return
 
     def RiffleShuffle(self):
-        cut = random.randint(3*self.deckSize/8, 5*self.deckSize/8)
+        cut = random.randint(5, self.deckSize-5)
         left = self.cards[:cut]
         right = self.cards[cut:]
 
@@ -143,19 +143,16 @@ class Cards():
 
     def NormalShuffle(self):
         count = len(self.cards)
-        cut = random.randint(3*count/8, 5*count/8)
-        remaining = self.cards
-        newCards = []
-        loop = 0
-        while loop < 2 and cut > 0:
-            newCards = remaining[:cut] + newCards
-            remaining = remaining[cut:]
-            count = len(remaining)
-            cut = random.randint(3*count/8, 5*count/8)
-            loop += 1
-        newCards = remaining + newCards
+        cut1 = random.randint(1, self.deckSize-1)
+        cut2 = random.randint(1, self.deckSize-1)
+        while cut2 == cut1:
+            cut2 = random.randint(1, self.deckSize-1)
 
-        self.cards = newCards
+        top = self.cards[:min(cut1, cut2)]
+        middle = self.cards[min(cut1, cut2):max(cut1, cut2)]
+        bottom = self.cards[max(cut1, cut2):]
+        self.cards = middle + top + bottom
+
         self.correctGuesses = -1
         self.isOrdered = False
         self.numShuffles += 1
