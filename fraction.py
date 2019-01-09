@@ -117,7 +117,7 @@ class Fraction():
         self.numerator /= gcd
         self.denominator /= gcd
 
-    def PrettyPrintFraction(self):
+    def PrettyPrint(self):
         print self.numerator,
         if self.numerator == 0 or self.denominator == 1:
             print

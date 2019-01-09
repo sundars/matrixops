@@ -105,7 +105,7 @@ class LinearEquations():
 
         return self.A.Multiply(soln).IsEqual(self.B)
 
-    def PrettyPrintSystemOfEquations(self):
+    def PrettyPrint(self):
         a = Matrix.CreateBlank(self.nEquations, self.nVariables)
         for i in range (0, a.rSize):
             for j in range(0, a.cSize):

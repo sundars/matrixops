@@ -20,7 +20,7 @@ def main():
     else:
         if m1 is not None:
             print "Input matrix is:"
-            m1.PrettyPrintMatrix()
+            m1.PrettyPrint()
             print
             if calculateDeterminant: print "- Calculate determinant of this matrix"
             if calculateInverse: print "- Calculate inverse of this matrix"
@@ -28,7 +28,7 @@ def main():
     if soe is not None:
         print
         print "System of Equations is:"
-        soe.PrettyPrintSystemOfEquations()
+        soe.PrettyPrint()
         print
         print "- Find solution to this system of equations"
 
@@ -60,11 +60,11 @@ def main():
             if inverseMatrix.IsEqual(inv):
                 print "Yay! got the correct inverse using Guass Jordan method"
             else:
-                inv.PrettyPrintMatrix()
+                inv.PrettyPrint()
                 raise Exception("Oops! got the wrong inverse using Guass Jordan method")
 
             print "The inverse matrix is:"
-            inverseMatrix.PrettyPrintMatrix()
+            inverseMatrix.PrettyPrint()
             print_space()
 
             # Check if inverse is correct
@@ -74,10 +74,10 @@ def main():
             productMatrix = m1.Multiply(inverseMatrix)
             if not productMatrix.IsIdentityMatrix():
                 print "Something went wrong..."
-                productMatrix.PrettyPrintMatrix()
+                productMatrix.PrettyPrint()
                 print_space()
             print "The identity matrix:"
-            productMatrix.PrettyPrintMatrix()
+            productMatrix.PrettyPrint()
             print_space()
 
         except Exception, e:
@@ -94,7 +94,7 @@ def main():
 
             productMatrix = step_by_step_multiply(m1, m2)
             print "Product matrix:"
-            productMatrix.PrettyPrintMatrix()
+            productMatrix.PrettyPrint()
             print_space()
 
         except Exception, e:
@@ -292,7 +292,7 @@ def step_by_step_inverse_cofactors(m):
 
     if showHint:
         print "Inverse matrix is:"
-        inv.PrettyPrintMatrix()
+        inv.PrettyPrint()
         print_space()
 
     return inv
@@ -333,7 +333,7 @@ def show_hint(s, prettyPrint=False, m1=None, m2=None):
         if m2 is not None:
             Matrix.PrettyPrintTwoMatrices(m1, m2)
         else:
-            m1.PrettyPrintMatrix()
+            m1.PrettyPrint()
 
         print_raw_input("Press Enter to continue...")
 

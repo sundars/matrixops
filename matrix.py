@@ -54,7 +54,7 @@ class Matrix():
             self.isValid = True
 
     def __str__(self):
-        self.PrettyPrintMatrix()
+        self.PrettyPrint()
 
     # Return the element in rth row cth column
     def GetElement(self, r, c):
@@ -262,7 +262,7 @@ class Matrix():
         return l
 
     # Pretty print a matrix, aligning rows and columns
-    def PrettyPrintMatrix(self):
+    def PrettyPrint(self):
         m = Matrix.CreateBlank(self.rSize, self.cSize, self.keepFraction)
         for i in range(0, self.rSize):
             for j in range(0, self.cSize):
