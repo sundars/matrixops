@@ -1,4 +1,5 @@
 import random
+from colors import bcolors
 
 class Cards():
     deckSize = 52
@@ -164,15 +165,51 @@ class Cards():
         cards = [' A', ' 2', ' 3', ' 4', ' 5', ' 6', ' 7', ' 8', ' 9', '10', ' J', ' Q', ' K']
 
         for i in range(0, self.cardsPerSuit):
-            print " _________  _________  _________  _________ "
+            print " " + bcolors.B_DarkGray + bcolors.F_LightGray + "---------" + bcolors.END,
+            print " " + bcolors.B_DarkGray + bcolors.F_LightGray + "---------" + bcolors.END,
+            print " " + bcolors.B_DarkGray + bcolors.F_LightGray + "---------" + bcolors.END,
+            print " " + bcolors.B_DarkGray + bcolors.F_LightGray + "---------" + bcolors.END
+
             for j in range(0, self.numSuits):
-                suitIndex = self.cards[j * self.cardsPerSuit + i] / self.cardsPerSuit
-                cardIndex = self.cards[j * self.cardsPerSuit + i] % self.cardsPerSuit
-                print " | %s-%s  |" % (cards[cardIndex], suits[suitIndex]),
+                SI = self.cards[j * self.cardsPerSuit + i] / self.cardsPerSuit
+                CI = self.cards[j * self.cardsPerSuit + i] % self.cardsPerSuit
+                print " " + bcolors.B_LightGray + bcolors.F_DarkGray + "|",
+                if SI == 0 or SI == 2:
+                    print bcolors.F_Black + "%s-%s" % (cards[CI], suits[SI]),
+                else:
+                    print bcolors.F_Red + "%s-%s" % (cards[CI], suits[SI]),
+                print bcolors.F_DarkGray + " |" + bcolors.END,
             print
-        print " |       |  |       |  |       |  |       | "
-        print " |       |  |       |  |       |  |       | "
-        print " ---------  ---------  ---------  --------- "
+
+        print " " + bcolors.B_LightGray + bcolors.F_DarkGray + "|       |" + bcolors.END,
+        print " " + bcolors.B_LightGray + bcolors.F_DarkGray + "|       |" + bcolors.END,
+        print " " + bcolors.B_LightGray + bcolors.F_DarkGray + "|       |" + bcolors.END,
+        print " " + bcolors.B_LightGray + bcolors.F_DarkGray + "|       |" + bcolors.END
+
+        print " " + bcolors.B_LightGray + bcolors.F_DarkGray + "|       |" + bcolors.END,
+        print " " + bcolors.B_LightGray + bcolors.F_DarkGray + "|       |" + bcolors.END,
+        print " " + bcolors.B_LightGray + bcolors.F_DarkGray + "|       |" + bcolors.END,
+        print " " + bcolors.B_LightGray + bcolors.F_DarkGray + "|       |" + bcolors.END
+
+        for j in range(0, self.numSuits):
+            SI = self.cards[j * self.cardsPerSuit + i] / self.cardsPerSuit
+            CI = self.cards[j * self.cardsPerSuit + i] % self.cardsPerSuit
+            print " " + bcolors.B_LightGray + bcolors.F_DarkGray + "|",
+            if SI == 0 or SI == 2:
+                print bcolors.F_Black + "%s-%s" % (cards[CI], suits[SI]),
+            else:
+                print bcolors.F_Red + "%s-%s" % (cards[CI], suits[SI]),
+            print bcolors.F_DarkGray + " |" + bcolors.END,
+        print
+        print " " + bcolors.B_LightGray + bcolors.F_DarkGray + "|Pursute|" + bcolors.END,
+        print " " + bcolors.B_LightGray + bcolors.F_DarkGray + "|Pursute|" + bcolors.END,
+        print " " + bcolors.B_LightGray + bcolors.F_DarkGray + "|Pursute|" + bcolors.END,
+        print " " + bcolors.B_LightGray + bcolors.F_DarkGray + "|Pursute|" + bcolors.END
+
+        print " " + bcolors.B_DarkGray + bcolors.F_LightGray + "---------" + bcolors.END,
+        print " " + bcolors.B_DarkGray + bcolors.F_LightGray + "---------" + bcolors.END,
+        print " " + bcolors.B_DarkGray + bcolors.F_LightGray + "---------" + bcolors.END,
+        print " " + bcolors.B_DarkGray + bcolors.F_LightGray + "---------" + bcolors.END
 
         return
 
