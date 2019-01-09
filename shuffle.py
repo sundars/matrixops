@@ -78,6 +78,9 @@ def interactive(deck, shuffleType, numShuffles, numTests):
         command = raw_input(">>> ")
         print
 
+        if command == '':
+            continue
+
         if command == 'Exit':
             return
 
@@ -104,8 +107,8 @@ def interactive(deck, shuffleType, numShuffles, numTests):
             print "How many times would you like to test the shuffiliness of the deck? - defaults to 100"
             try:
                 numTests = int(raw_input("Number of Tests >>> "))
-                if numTests < 1 or numTests > 100:
-                    print "Number of shuffles %d outside range (1,100) - defaulting to 100" % numTests
+                if numTests < 1 or numTests > 1000:
+                    print "Number of shuffles %d outside range (1,1000) - defaulting to 100" % numTests
                     numTests = 100
 
             except Exception, e:
