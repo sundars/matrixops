@@ -76,7 +76,6 @@ def interactive(deck, shuffleType, numShuffles, numTests):
             print "%s, " % method,
         print "Exit"
         command = raw_input(">>> ")
-        print
 
         if command == '':
             continue
@@ -85,6 +84,7 @@ def interactive(deck, shuffleType, numShuffles, numTests):
             return
 
         if command == "Shuffle" or command == 'ShuffleMany' or command == 'ShuffleAndTestMany':
+            print
             print "Choose one of the following shuffle types - Riffle, Normal or Perfect - defaults to Riffle"
             shuffleType = raw_input("Shuffle type >>> ")
             if (shuffleType != 'Riffle' and shuffleType != 'Normal' and shuffleType != 'Perfect'):
