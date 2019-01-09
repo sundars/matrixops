@@ -30,8 +30,9 @@ def interactive(instance, klass, objectType):
                             and not func.startswith("Pop")]
         method_list.sort()
         for method in method_list:
-            print "%s, " % method,
-        print "Exit"
+            print "    %s" % method
+        print "    Exit"
+        print
         command = raw_input(">>> ")
 
         if command == '':
