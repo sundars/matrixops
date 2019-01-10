@@ -8,7 +8,7 @@ from equation import LinearEquations
 def main():
     instance, klass, objectType = parseArgs()
 
-    print "Entering interactive mode for object %s" % objectType
+    print("Entering interactive mode for object {0:s}".format(objectType))
     interactive(instance, klass, objectType)
 
     sys.exit(0)
@@ -19,21 +19,21 @@ def interactive(instance, klass, objectType):
     useNumShuffles = False
     useNumTests = False
 
-    print "Instance of class %s is:" % objectType
+    print("Instance of class {0:s} is:".format(objectType))
     instance.PrettyPrint()
 
     while True:
-        print
-        print "Do any of the following to the object of class %s..." % objectType
+        print('')
+        print("Do any of the following to the object of class {0:s}...".format(objectType))
         method_list = [func for func in dir(klass) if callable(getattr(klass, func))
                             and not func.startswith("__")
                             and not func.startswith("Pop")]
         method_list.sort()
         for method in method_list:
-            print "    %s" % method
-        print "    Exit"
-        print
-        command = raw_input(">>> ")
+            print("    {0:s}".format(method))
+        print("    Exit")
+        print('')
+        command = print_raw_input(">>> ")
 
         if command == '':
             continue
@@ -42,34 +42,34 @@ def interactive(instance, klass, objectType):
             return
 
         if command == "Shuffle" or command == 'ShuffleMany' or command == 'ShuffleAndTestMany':
-            print
-            print "Choose one of the following shuffle types - Riffle, Normal or Perfect - defaults to Riffle"
-            shuffleType = raw_input("Shuffle type >>> ")
+            print('')
+            print("Choose one of the following shuffle types - Riffle, Normal or Perfect - defaults to Riffle")
+            shuffleType = print_raw_input("Shuffle type >>> ")
             if (shuffleType != 'Riffle' and shuffleType != 'Normal' and shuffleType != 'Perfect'):
                 shuffleType = 'Riffle'
 
         if command == 'ShuffleMany' or command == 'ShuffleAndTestMany':
-            print
-            print "How many times would you like to shuffle the deck? - defaults to 1"
+            print('')
+            print("How many times would you like to shuffle the deck? - defaults to 1")
             try:
-                numShuffles = int(raw_input("Number of shuffles >>> "))
+                numShuffles = int(print_raw_input("Number of shuffles >>> "))
                 if numShuffles < 0 or numShuffles > 10000:
-                    print "Number of shuffles %d outside range (0,10000) - defaulting to 1" % numShuffles
+                    print("Number of shuffles {0:d} outside range (0,10000) - defaulting to 1".format(numShuffles))
                     numShuffles = 1
 
-            except Exception, e:
+            except Exception as e:
                 numShuffles = 1
 
         if command == 'ShuffleAndTestMany':
-            print
-            print "How many times would you like to test the shuffiliness of the deck? - defaults to 100"
+            print('')
+            print("How many times would you like to test the shuffiliness of the deck? - defaults to 100")
             try:
-                numTests = int(raw_input("Number of Tests >>> "))
+                numTests = int(print_raw_input("Number of Tests >>> "))
                 if numTests < 1 or numTests > 1000:
-                    print "Number of shuffles %d outside range (1,1000) - defaulting to 100" % numTests
+                    print("Number of shuffles {0:d} outside range (1,1000) - defaulting to 100".format(numTests))
                     numTests = 100
 
-            except Exception, e:
+            except Exception as e:
                 numTests = 100
 
         print_space()
@@ -80,11 +80,11 @@ def interactive(instance, klass, objectType):
             if command == 'Test' or command == 'ShuffleAndTestMany':
                 if command == 'ShuffleAndTestMany':
                     result = method_to_call(instance, numShuffles, numTests, shuffleType)
-                    print("After shuffling with the %s shuffle %d times and running %d tests" % (shuffleType, numShuffles, numTests))
+                    print("After shuffling with the {0:s} shuffle {1:d} times and running {2:d} tests".format(shuffleType, numShuffles, numTests))
                 else:
                     result = method_to_call(instance)
 
-                print("Number of cards correctly predicted in the shuffled deck is: %.2f" % result)
+                print("Number of cards correctly predicted in the shuffled deck is: {0:.2f}".format(result))
                 print_space()
 
             elif command == 'ShuffleMany':
@@ -96,19 +96,25 @@ def interactive(instance, klass, objectType):
             elif command != 'PrettyPrint':
                 method_to_call(instance)
 
-            raw_input("After the operation <%s>, to object %s result is..." % (command, objectType))
+            print_raw_input("After the operation <{0:s}>, to object {1:s} result is...".format(command, objectType))
             instance.PrettyPrint()
 
-        except Exception, e:
+        except Exception as e:
             print(e)
             continue
 
     return
 
-
 def print_space():
-    print
-    print "------------------------------------------------------------------------------------"
+    print('')
+    print("------------------------------------------------------------------------------------")
+
+def print_raw_input(s):
+    try:
+        from builtins import input
+        return input(s)
+    except ImportError:
+        return raw_input(s)
 
 def parseArgs():
     objectType = ''
@@ -135,20 +141,20 @@ def parseArgs():
         klass = globals()[objectType]
 
         if (objectType == 'Matrix'):
-            print 'Please provide a square matrix formatted as a11,a12,...,a1n,a21,a22,...,a2n,...,an1,an2,...,ann'
-            marg = raw_input(">>> ")
+            print('Please provide a square matrix formatted as a11,a12,...,a1n,a21,a22,...,a2n,...,an1,an2,...,ann')
+            marg = input(">>> ")
 
             instance = klass(marg, True)
 
         if (objectType == 'Equation'):
-            print 'Specify a system of equations to solve formatted as 2*a+3*b+1*c=4:5*a-1*c=1:...'
-            sarg = raw_input(">>> ")
+            print('Specify a system of equations to solve formatted as 2*a+3*b+1*c=4:5*a-1*c=1:...')
+            sarg = input(">>> ")
 
             instance = klass(sarg, True)
 
         if (objectType == 'Fraction'):
-            print 'Specify a fraction formatted as a/b'
-            farg = raw_input(">>> ")
+            print('Specify a fraction formatted as a/b')
+            farg = input(">>> ")
 
             instance = klass(farg)
 
@@ -156,18 +162,18 @@ def parseArgs():
             instance = klass()
 
         return (instance, klass, objectType)
-    except Exception, e:
+    except Exception as e:
         print(e)
         usage()
 
 # Usage for this program
 def usage():
-    print
-    print sys.argv[0] + " [options]"
-    print "Required:"
-    print " -c --class-type                     one of 'Matrix', 'Equation', 'Fraction' or 'Cards'"
-    print "Options:"
-    print " -h, --help                          show this help message and exit"
+    print('')
+    print(sys.argv[0] + " [options]")
+    print("Required:")
+    print(" -c --class-type                     one of 'Matrix', 'Equation', 'Fraction' or 'Cards'")
+    print("Options:")
+    print(" -h, --help                          show this help message and exit")
     sys.exit(1)
 
 main()

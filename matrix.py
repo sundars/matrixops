@@ -1,3 +1,4 @@
+from __future__ import print_function
 from overrides import *
 import math
 from fraction import Fraction
@@ -26,7 +27,7 @@ class Matrix():
                             self.elements.append(Fraction.FromDecimal(float(element)))
                         else:
                             self.elements.append(float(element))
-                    except Exception, e:
+                    except Exception as e:
                         self.elements.append(element)
 
                 self.rSize = self.cSize = int(math.sqrt(len(self.elements)))
@@ -44,7 +45,7 @@ class Matrix():
                                 self.elements.append(Fraction.FromDecimal(float(element)))
                             else:
                                 self.elements.append(float(element))
-                        except Exception, e:
+                        except Exception as e:
                             self.elements.append(element)
 
                 self.cSize = int(len(self.elements)/self.rSize)
@@ -68,7 +69,7 @@ class Matrix():
     def IsValue(self, r, c, val):
         try:
             return math.fabs(self.elements[r * self.cSize + c] - val) < 0.001
-        except Exception, e:
+        except Exception as e:
             return self.elements[r * self.cSize + c] == val
 
     def MakeCopy(self):
@@ -205,7 +206,7 @@ class Matrix():
         for i in range(0, len(self.elements)):
             try:
                 if math.fabs(self.elements[i] - m.elements[i]) > 0.001: return False
-            except Exception, e:
+            except Exception as e:
                 if self.elements[i] != m.elements[i]: return False
 
         return True
@@ -240,12 +241,12 @@ class Matrix():
                 if i == j:
                     try:
                         if math.fabs(self.elements[x]-1.0) > 0.001: return False
-                    except Exception, e:
+                    except Exception as e:
                         if self.elements[x] != 1: return False
                 else:
                     try:
                         if math.fabs(self.elements[x]-0.0) > 0.001: return False
-                    except Exception, e:
+                    except Exception as e:
                         if self.elements[x] != 0: return False
 
         return True
@@ -276,8 +277,8 @@ class Matrix():
         for i in range(0, m.rSize):
             for j in range(0, m.cSize):
                 x = i * m.cSize + j
-                print m.elements[x].rjust(just),
-            print
+                print(m.elements[x].rjust(just), end='')
+            print()
 
     # Pretty print two  matrices side by side
     @classmethod
@@ -306,18 +307,18 @@ class Matrix():
             for j in range(0, m1.cSize):
                 x = i * m1.cSize + j
                 if i < m1.rSize:
-                    print m1.elements[x].rjust(just1),
+                    print(m1.elements[x].rjust(just1), end='')
                 else:
-                    print ''.rjust(just1),
+                    print(''.rjust(just1), end='')
 
-            print "      ",
+            print("      ", end='')
             for j in range(0, m2.cSize):
                 x = i * m2.cSize + j
                 if i < m2.rSize:
-                    print m2.elements[x].rjust(just2),
+                    print(m2.elements[x].rjust(just2), end='')
                 else:
-                    print ''.rjust(just2),
-            print
+                    print(''.rjust(just2), end='')
+            print()
 
     # Returns a square matrix
     @classmethod

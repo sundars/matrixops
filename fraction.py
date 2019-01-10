@@ -1,3 +1,4 @@
+from __future__ import print_function
 import math
 from collections import OrderedDict
 
@@ -18,7 +19,7 @@ class Fraction():
         self.denominator = int(parts[1])
 
         if self.denominator == 0:
-            raise Exception("Fraction %d/%d is indeterminate" % (self.numerator, self.denominator))
+            raise Exception("Fraction {0:d}/{1:d} is indeterminate".format(self.numerator, self.denominator))
 
         if self.numerator == 0:
             return
@@ -33,68 +34,66 @@ class Fraction():
     def __add__(self, f):
         d = self.denominator * f.denominator
         n = self.numerator * f.denominator + self.denominator * f.numerator
-        return Fraction("%d/%d" % (n, d))
+        return Fraction("{0:d}/{1:d}".format(n, d))
 
     def __sub__(self, f):
         d = self.denominator * f.denominator
         n = self.numerator * f.denominator - self.denominator * f.numerator
-        return Fraction("%d/%d" % (n, d))
+        return Fraction("{0:d}/{1:d}".format(n, d))
 
     def __mul__(self, f):
         d = self.denominator * f.denominator
         n = self.numerator * f.numerator
-        return Fraction("%d/%d" % (n, d))
+        return Fraction("{0:d}/{1:d}".format(n, d))
 
     def __div__(self, f):
         d = self.denominator * f.numerator
         n = self.numerator * f.denominator
-        return Fraction("%d/%d" % (n, d))
+        return Fraction("{0:d}/{1:d}".format(n, d))
 
     def __pow__(self, power):
         p = math.fabs(power)
-        d = self.denominator ** p
-        n = self.numerator ** p
-        f = Fraction("%d/%d" % (n, d))
-
+        fd = Fraction.FromDecimal(self.denominator ** p)
+        fn = Fraction.FromDecimal(self.numerator ** p)
         if power < 0:
-            return f.Reciprocal()
+            return fd / fn
 
-        return f
+        return fn / fd
 
     def __lt__(self, f):
         try:
             return self.value < f.value
-        except Exception, e:
+        except Exception as e:
             return self.value < f
 
     def __le__(self, f):
         try:
             return self.value <= f.value
-        except Exception, e:
+        except Exception as e:
             return self.value <= f
 
     def __gt__(self, f):
         try:
             return self.value > f.value
-        except Exception, e:
+        except Exception as e:
             return self.value > f
 
     def __ge__(self, f):
         try:
             return self.value >= f.value
-        except Exception, e:
+        except Exception as e:
             return self.value >= f
 
     def __eq__(self, f):
         try:
             return self.value == f.value
-        except Exception, e:
+        except Exception as e:
             return self.value == f
 
     def __ne__(self, f):
         try:
             return self.value != f.value
-        except Exception, e:
+        except Exception as e:
             return self.value != f
 
     def __repr__(self):
@@ -110,7 +109,7 @@ class Fraction():
         return self
 
     def Reciprocal(self):
-        return Fraction("%d/%d" % (self.denominator, self.numerator))
+        return Fraction("{0:d}/{1:d}".format(self.denominator, self.numerator))
 
     def Simplify(self):
         gcd = Fraction.GCD(abs(self.numerator), self.denominator)
@@ -118,18 +117,18 @@ class Fraction():
         self.denominator /= gcd
 
     def PrettyPrint(self):
-        print self.numerator,
+        print(self.numerator, end='')
         if self.numerator == 0 or self.denominator == 1:
-            print
+            print()
         else:
-            print "/",
-            print self.denominator
+            print("/", end='')
+            print(self.denominator)
 
     def FractionStr(self):
-        s = "%d" % self.numerator
+        s = "{0:d}".format(self.numerator)
         if self.numerator != 0 and self.denominator != 1:
             s += "/"
-            s += "%d" % self.denominator
+            s += "{0:d}".format(self.denominator)
 
         return s
 
@@ -235,7 +234,7 @@ class Fraction():
                 return (pf + continuedFraction[i-1]) * sign
 
             if i == len(continuedFraction):
-                pf = Fraction("1/%d" % continuedFraction[i-1])
+                pf = Fraction("1/{0:d}".format(continuedFraction[i-1]))
 
             else:
                 pf = Fraction('1/1') / (pf + continuedFraction[i-1])
@@ -245,13 +244,13 @@ class Fraction():
     def GenerateContinuedFraction(cls, decimal):
         continuedFraction = []
         d, sign = (math.fabs(decimal), int(not decimal or decimal/math.fabs(decimal)))
-        whole, remaining = (int(d), float("0.%s" % str(d)[(len(str(int(d)))+1):]))
+        whole, remaining = (int(d), float("0.{0:s}".format(str(d)[(len(str(int(d)))+1):])))
         continuedFraction.append(whole)
 
         loop = 0
         while remaining > 0.00001 and loop < 16:
             reciprocal = 1/remaining
-            whole, remaining = (int(reciprocal), float("0.%s" % str(reciprocal)[(len(str(int(reciprocal)))+1):]))
+            whole, remaining = (int(reciprocal), float("0.{0:s}".format(str(reciprocal)[(len(str(int(reciprocal)))+1):])))
             continuedFraction.append(whole)
             loop += 1
 
@@ -268,7 +267,7 @@ class Fraction():
         count = 0
         # Print "-1 * (" if it is a negative number
         if sign < 0:
-            print "-1 * (",
+            print("-1 * (", end='')
             count += 7
 
         if continuedFraction[len(continuedFraction)-1] == 1:
@@ -277,17 +276,17 @@ class Fraction():
 
         for i in range(0, len(continuedFraction)):
             # Print the next number of the continued Fraction
-            print continuedFraction[i],
+            print(continuedFraction[i], end='')
 
             # If last number, print a new line and we are done
             if i+1 == len(continuedFraction):
-                if sign < 0: print ")"  # if a negative number print closing ")" before new line
-                print
+                if sign < 0: print(")")  # if a negative number print closing ")" before new line
+                print()
                 return
 
             # Print "+ 1" and a new line
-            print " + ",
-            print 1
+            print(" + ", end='')
+            print(1)
 
             # Increment count by the length of the continued fraction and 4 more for the + 1
             count += len(str(continuedFraction[i]))+4
@@ -296,7 +295,7 @@ class Fraction():
             s = ""
             for j in range(0, count): 
                 s += " "
-            print s,
+            print(s, end='')
             count += 1
 
             # Calculate length of the fraction line it is length of next number plus 6 (for "+ 1"), unless last but one
@@ -309,7 +308,7 @@ class Fraction():
             l = ""
             for j in range(0, countL):
                 l += "-"
-            print l
+            print(l)
 
             # Then print as many spaces as needed and loop back to next number
-            print s,
+            print(s, end='')

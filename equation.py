@@ -1,3 +1,4 @@
+from __future__ import print_function
 from overrides import *
 import math
 from matrix import Matrix
@@ -37,7 +38,7 @@ class LinearEquations():
 
             # split the equation into the lhs and rhs
             parts = eqn.split('=')
-            assert (len(parts) == 2), "Malformed equation %s" % eqn
+            assert (len(parts) == 2), "Malformed equation {0:s}".format(eqn)
             lhs = parts[0]
             rhs = parts[1]
 
@@ -52,7 +53,7 @@ class LinearEquations():
 
                 s = lhs[c:n]
                 coeff = s.split("*")
-                assert (len(coeff) == 2), "Malformed coefficient %s" % s
+                assert (len(coeff) == 2), "Malformed coefficient {0:s}".format(s)
                 equation[coeff[1]] = coeff[0]
 
                 c = n
@@ -64,21 +65,21 @@ class LinearEquations():
 
         variables = []
         for equation in equations:
-            for var in equation.keys():
+            for var in list(equation.keys()):
                 if var not in variables and var is not 'rhs':
                     variables.append(var)
 
         variables.sort()
         varStr = ""
         for var in variables:
-            varStr += "%s:" % var
+            varStr += "{0:s}:".format(var)
 
         coeffStr = ""
         rhsStr = ""
         for equation in equations:
             for i in range(0, len(variables)):
                 var = variables[i]
-                if var in equation.keys():
+                if var in list(equation.keys()):
                     coeffStr += equation[var]
                 else:
                     coeffStr += '0'
@@ -97,11 +98,11 @@ class LinearEquations():
         self.keepFraction = keepFraction
 
         if self.nVariables != self.nEquations:
-            raise Exception("Numbers of variables (%d) and number of equations don't match (%d)" % (self.nVariables, self.nEquations))
+            raise Exception("Numbers of variables ({0:d}) and number of equations don't match ({1:d})".format(self.nVariables, self.nEquations))
 
     def CheckSolution(self, soln):
         if soln.rSize != self.nVariables and soln.cSize != 1:
-            raise Exception("Solution matrix should be a %dx1 matrix" % self.nVariables)
+            raise Exception("Solution matrix should be a {0:d}x1 matrix".format( self.nVariables))
 
         return self.A.Multiply(soln).IsEqual(self.B)
 
@@ -138,58 +139,58 @@ class LinearEquations():
         just3 = b.GetLargestSize() + 1
         for i in range(0, max(a.rSize, x.rSize, b.rSize)):
             if i < a.rSize:
-                print "|",
+                print("|", end=' ')
             else:
-                print " ",
+                print(" ", end=' ')
             for j in range(0, a.cSize):
                 ix = i * a.cSize + j
                 if i < a.rSize:
-                    print a.elements[ix].rjust(just1),
+                    print(a.elements[ix].rjust(just1), end=' ')
                 else:
-                    print ''.rjust(just1),
+                    print(''.rjust(just1), end=' ')
             if i < a.rSize:
-                print "|",
+                print("|", end=' ')
             else:
-                print " ",
+                print(" ", end=' ')
 
             if i == round(a.rSize/2):
-                print " * ",
+                print(" * ", end=' ')
             else:
-                print "   ",
+                print("   ", end=' ')
 
             if i < x.rSize:
-                print "|",
+                print("|", end=' ')
             else:
-                print " ",
+                print(" ", end=' ')
             for j in range(0, x.cSize):
                 ix = i * x.cSize + j
                 if i < x.rSize:
-                    print x.elements[ix].rjust(just2),
+                    print(x.elements[ix].rjust(just2), end=' ')
                 else:
-                    print ''.rjust(just2),
+                    print(''.rjust(just2), end=' ')
             if i < x.rSize:
-                print "|",
+                print("|", end=' ')
             else:
-                print " ",
+                print(" ", end=' ')
 
             if i == round(a.rSize/2):
-                print " = ",
+                print(" = ", end=' ')
             else:
-                print "   ",
+                print("   ", end=' ')
 
             if i < b.rSize:
-                print "|",
+                print("|", end=' ')
             else:
-                print " ",
+                print(" ", end=' ')
             for j in range(0, b.cSize):
                 ix = i * b.cSize + j
                 if i < b.rSize:
-                    print b.elements[ix].rjust(just3),
+                    print(b.elements[ix].rjust(just3), end=' ')
                 else:
-                    print ''.rjust(just3),
+                    print(''.rjust(just3), end=' ')
             if i < b.rSize:
-                print "|",
+                print("|", end=' ')
             else:
-                print " ",
-            print
+                print(" ", end=' ')
+            print()
 

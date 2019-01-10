@@ -9,42 +9,43 @@ showHint = False
 def main():
     calculateInverse, calculateDeterminant, m1, m2, soe = parseArgs()
 
-    print
     if m2 is not None:
-        print "Input matrices are:"
+        print('')
+        print("Input matrices are:")
         Matrix.PrettyPrintTwoMatrices(m1, m2)
-        print
-        if calculateDeterminant: print "- Calculate determinant of first matrix"
-        if calculateInverse: print "- Calculate inverse of first matrix"
-        print "- Left multiply second matrix with the first matrix"
+        print('')
+        if calculateDeterminant: print("- Calculate determinant of first matrix")
+        if calculateInverse: print("- Calculate inverse of first matrix")
+        print("- Left multiply second matrix with the first matrix")
     else:
         if m1 is not None:
-            print "Input matrix is:"
+            print('')
+            print("Input matrix is:")
             m1.PrettyPrint()
-            print
-            if calculateDeterminant: print "- Calculate determinant of this matrix"
-            if calculateInverse: print "- Calculate inverse of this matrix"
+            print('')
+            if calculateDeterminant: print("- Calculate determinant of this matrix")
+            if calculateInverse: print("- Calculate inverse of this matrix")
 
     if soe is not None:
-        print
-        print "System of Equations is:"
+        print('')
+        print("System of Equations is:")
         soe.PrettyPrint()
-        print
-        print "- Find solution to this system of equations"
+        print('')
+        print("- Find solution to this system of equations")
 
     print_space()
 
     if (not calculateInverse and not calculateDeterminant and m2 is None and soe is None):
-        print "No operation specified, nothing do... have a nice day"
+        print("No operation specified, nothing do... have a nice day")
         sys.exit(0)
 
     if calculateDeterminant:
         try:
             det = m1.Determinant()
-            print "Determinant = ", det
+            print("Determinant = {0}".format(det))
             print_space()
 
-        except Exception, e:
+        except Exception as e:
             print(e)
             print_space()
 
@@ -58,29 +59,29 @@ def main():
 
             inv = step_by_step_guass_jordan(m1)
             if inverseMatrix.IsEqual(inv):
-                print "Yay! got the correct inverse using Guass Jordan method"
+                print("Yay! got the correct inverse using Guass Jordan method")
             else:
                 inv.PrettyPrint()
                 raise Exception("Oops! got the wrong inverse using Guass Jordan method")
 
-            print "The inverse matrix is:"
+            print("The inverse matrix is:")
             inverseMatrix.PrettyPrint()
             print_space()
 
             # Check if inverse is correct
-            print "Multiplying a matrix and its inverse will give..."
+            print("Multiplying a matrix and its inverse will give...")
             Matrix.PrettyPrintTwoMatrices(m1, inverseMatrix)
             print_raw_input("Press Enter to continue...")
             productMatrix = m1.Multiply(inverseMatrix)
             if not productMatrix.IsIdentityMatrix():
-                print "Something went wrong..."
+                print("Something went wrong...")
                 productMatrix.PrettyPrint()
                 print_space()
-            print "The identity matrix:"
+            print("The identity matrix:")
             productMatrix.PrettyPrint()
             print_space()
 
-        except Exception, e:
+        except Exception as e:
             print(e)
             print_space()
 
@@ -88,16 +89,16 @@ def main():
         try:
             productMatrix = m1.Multiply(m2)
 
-            print "Multiply the following two matrices:"
+            print("Multiply the following two matrices:")
             Matrix.PrettyPrintTwoMatrices(m1, m2)
             print_raw_input("Press Enter to continue...")
 
             productMatrix = step_by_step_multiply(m1, m2)
-            print "Product matrix:"
+            print("Product matrix:")
             productMatrix.PrettyPrint()
             print_space()
 
-        except Exception, e:
+        except Exception as e:
             print(e)
             print_space()
 
@@ -110,11 +111,11 @@ def main():
             else:
                 raise Exception("Oops! got the wrong solution")
 
-            print "The solution to the system of equations is:"
+            print("The solution to the system of equations is:")
             Matrix.PrettyPrintTwoMatrices(soe.X, solutionMatrix)
             print_space()
 
-        except Exception, e:
+        except Exception as e:
             print(e)
             print_space()
 
@@ -138,9 +139,9 @@ def step_by_step_guass_jordan(m1, m2=None):
         inverseMatrix = m2.MakeCopy()
 
     if inverseMatrix.IsSquare():
-        print "Use Guass Jordan elimination and row-echelon form to find inverse of:"
+        print("Use Guass Jordan elimination and row-echelon form to find inverse of:")
     else:
-        print "Use Guass Jordan elimination to find the solution to the system of linear equations:"
+        print("Use Guass Jordan elimination to find the solution to the system of linear equations:")
     Matrix.PrettyPrintTwoMatrices(matrix, inverseMatrix)
     print_raw_input("Press Enter to continue...")
 
@@ -174,7 +175,7 @@ def row_reduce_down(m, inv, row):
     if row > 0:
         step += 1
         hint = 0
-        show_hint("Step %d: Make all elements in row %d, before column %d equal 0. Next..." % (step, row+1, row+1))
+        show_hint("Step {0:d}: Make all elements in row {1:d}, before column {2:d} equal 0. Next...".format(step, row+1, row+1))
         for i in range(0, row):
             element = m.GetElement(row, i)
             if not m.IsValue(row, i, 0):
@@ -182,12 +183,12 @@ def row_reduce_down(m, inv, row):
                     m.RowReduce(row, -1, element ** -1, 1)
                     inv.RowReduce(row, -1, element ** -1, 1)
                     hint += 1
-                    show_hint("    Hint %d.%d: Divide row %d by %s. Next..." % (step, hint, row+1, str(element)), True, m, inv)
+                    show_hint("    Hint {0:d}.{1:d}: Divide row {2:d} by {3:s}. Next...".format(step, hint, row+1, str(element)), True, m, inv)
 
                 m.RowReduce(row, i, 1, 1)
                 inv.RowReduce(row, i, 1, 1)
                 hint += 1
-                show_hint("    Hint %d.%d: Subtract row %d from row %d. Next..." % (step, hint, i+1, row+1), True, m, inv)
+                show_hint("    Hint {0:d}.{1:d}: Subtract row {2:d} from row {3:d}. Next...".format(step, hint, i+1, row+1), True, m, inv)
 
         if showHint and hint == 0:
             print_raw_input("    Already 0, nothing to do...") 
@@ -197,12 +198,12 @@ def row_reduce_down(m, inv, row):
     if not m.IsValue(row, row, 1):
         step += 1
         hint = 0
-        show_hint("Step %d: Make the element in row %d, column %d equal 1. Next..." % (step, row+1, row+1))
+        show_hint("Step {0:d}: Make the element in row {1:d}, column {2:d} equal 1. Next...".format(step, row+1, row+1))
 
         m.RowReduce(row, -1, diagElement ** -1, 1)
         inv.RowReduce(row, -1, diagElement ** -1, 1)
         hint += 1
-        show_hint("    Hint %d.%d: Divide row %d by %s. Next..." % (step, hint, row+1, str(diagElement)), True, m, inv)
+        show_hint("    Hint {0:d}.{1:d}: Divide row {2:d} by {3:s}. Next...".format(step, hint, row+1, str(diagElement)), True, m, inv)
 
     return m, inv
 
@@ -213,7 +214,7 @@ def row_reduce_up(m, inv, row):
     # Make all elements after the diagonal 0 by subtracting from rows below
     step += 1
     hint = 0
-    show_hint("Step %d: Make all elements in row %d, after column %d equal 0. Next..." % (step, row+1, row+1))
+    show_hint("Step {0:d}: Make all elements in row {1:d}, after column {2:d} equal 0. Next...".format(step, row+1, row+1))
     for i in range(m.rSize-1, row, -1):
         element = m.GetElement(row, i)
 
@@ -222,11 +223,10 @@ def row_reduce_up(m, inv, row):
             inv.RowReduce(row, i, 1, element)
             if element != 1:
                 hint += 1
-                show_hint("    Hint %d.%d: Multiply row %d by %s and subtract from row %d. Next..."
-                               % (step, hint, i+1, str(element), row+1), True, m, inv)
+                show_hint("    Hint {0:d}.{1:d}: Multiply row {2:d} by {3:s} and subtract from row {4:d}. Next...".format(step, hint, i+1, str(element), row+1), True, m, inv)
             else:
                 hint += 1
-                show_hint("    Hint %d.%d: Subtract row %d from row %d. Next..." % (step, hint, i+1, row+1), True, m, inv)
+                show_hint("    Hint {0:d}.{1:d}: Subtract row {2:d} from row {3:d}. Next...".format(step, hint, i+1, row+1), True, m, inv)
 
     if showHint and hint == 0:
         print_raw_input("   Already 0, nothing to do...") 
@@ -238,7 +238,7 @@ def add_row_to_make_diagonal_nonzero(m, inv, row):
     global step
     step += 1
     hint = 0
-    show_hint("Step %d: Make the element in row %d, column %d non-zero. Next..." % (step, row+1, row+1))
+    show_hint("Step {0:d}: Make the element in row {1:d}, column {2:d} non-zero. Next...".format(step, row+1, row+1))
     for i in range(1, m.rSize):
         ar = (row + i) % m.rSize
 
@@ -246,7 +246,7 @@ def add_row_to_make_diagonal_nonzero(m, inv, row):
             m.RowReduce(row, ar, 1, -1)
             inv.RowReduce(row, ar, 1, -1)
             hint += 1
-            show_hint("    Hint %d.%d: Add row %d to row %d. Next..." % (step, hint, ar+1, row+1), True, m, inv)
+            show_hint("    Hint {0:d}.{1:d}: Add row {2:d} to row {3:d}. Next...".format(step, hint, ar+1, row+1), True, m, inv)
             return
 
     # still zero
@@ -268,8 +268,7 @@ def add_row_to_make_diagonal_nonzero(m, inv, row):
                         m.RowReduce(row, ar2, 1, -1)
                         inv.RowReduce(row, ar2, 1, -1)
                         hint += 1
-                        show_hint("    Hint %d.%d: Add rows %d and %d to row %d. Next..."
-                                   % (step, hint, ar1+1, ar2+1, row+1), True, m, inv)
+                        show_hint("    Hint {0:d}.{1:d}: Add rows {2:d} and {3:d} to row {4:d}. Next...".format(step, hint, ar1+1, ar2+1, row+1), True, m, inv)
                         return
 
 # Inverse via minors, cofactors and adjugate - to double check Guass Jordan elimination
@@ -291,7 +290,7 @@ def step_by_step_inverse_cofactors(m):
     show_hint("Step 4: Divide adjugate by determinant to get inverse Matrix. Next...", True, inv)
 
     if showHint:
-        print "Inverse matrix is:"
+        print("Inverse matrix is:")
         inv.PrettyPrint()
         print_space()
 
@@ -306,8 +305,7 @@ def step_by_step_multiply(m1, m2):
     for i in range(0, m1.rSize):
         for j in range(0, m2.cSize):
             step += 1
-            show_hint("Step %d: Multiply corresponding elements in row %d of 1st matrix and column %d of 2nd matrix and add up..."
-                      % (step, i+1, j+1))
+            show_hint("Step {0:d}: Multiply corresponding elements in row {1:d} of 1st matrix and column {2:d} of 2nd matrix and add up...".format(step, i+1, j+1))
 
             row, column = Matrix.GetRowColumn(m1, m2, i, j)
             s = ""
@@ -315,9 +313,9 @@ def step_by_step_multiply(m1, m2):
             for k in range(0, m1.cSize):
                 element = row[k] * column[k] + element
                 if k == m1.cSize - 1:
-                    s += "%s * %s = %s\n" % (str(row[k]), str(column[k]), str(element))
+                    s += "{0:s} * {1:s} = {2:s}\n".format(str(row[k]), str(column[k]), str(element))
                 else:
-                    s += "%s * %s + " % (str(row[k]), str(column[k]))
+                    s += "{0:s} * {1:s} + ".format(str(row[k]), str(column[k]))
             matrix.SetElement(i, j, element)
             show_hint(s, True, matrix, None)
 
@@ -328,7 +326,13 @@ def step_by_step_multiply(m1, m2):
 def show_hint(s, prettyPrint=False, m1=None, m2=None):
     global showHint
     if not showHint: return
-    raw_input(s)
+
+    try:
+        input(s)
+    except Exception as e:
+        # ignore
+        pass
+
     if prettyPrint:
         if m2 is not None:
             Matrix.PrettyPrintTwoMatrices(m1, m2)
@@ -338,13 +342,18 @@ def show_hint(s, prettyPrint=False, m1=None, m2=None):
         print_raw_input("Press Enter to continue...")
 
 def print_space():
-    print
-    print "------------------------------------------------------------------------------------"
-    print
+    print('')
+    print("------------------------------------------------------------------------------------")
+    print('')
 
 def print_raw_input(s):
-    raw_input(s)
-    print
+    try:
+        input(s)
+    except Exception as e:
+        # ignore
+        pass
+
+    print('')
 
 def parseArgs():
     global showHint
@@ -400,26 +409,26 @@ def parseArgs():
             raise Exception("Must specify square matrix to calculate inverse or determinant")
 
         return (calculateInverse, calculateDeterminant, m1, m2, s)
-    except Exception, e:
+    except Exception as e:
         print(e)
         usage()
 
 # Usage for this program
 def usage():
-    print
-    print sys.argv[0] + " [options]"
-    print "Matrix is required:"
-    print " -m MATRIX, --matrix=MATRIX          Square matrix formatted as a11,a12,...,a1n,a21,a22,...,a2n,...,an1,an2,...,ann"
-    print "                                     Non-square formatted as a11,a12,...,a1n:a21,a22,...,a2n:...:am1,am2,...,amn:"
-    print " -s EQNS --system-of-equations=EQNS  specify a system of equations to solve"
-    print "                                     Format is: 2*a+3*b+1*c=4:5*a-1*c=1:..."
-    print "Options:"
-    print " -p MATRIX --matrix-multiply=MATRIX  left multiply matrix provided by -m with the one provided by -p"
-    print " -i --inverse                        calculate the inverse of matrix"
-    print " -d --determinant                    calculate the determinant of matrix"
-    print " -v --verbose-hint                   show verbose hints for Guass Jordan elimination method"
-    print " -f --use-fraction                   Use fraction instead of decimals"
-    print " -h, --help                          show this help message and exit"
+    print('')
+    print(sys.argv[0] + " [options]")
+    print("Matrix is required:")
+    print(" -m MATRIX, --matrix=MATRIX          Square matrix formatted as a11,a12,...,a1n,a21,a22,...,a2n,...,an1,an2,...,ann")
+    print("                                     Non-square formatted as a11,a12,...,a1n:a21,a22,...,a2n:...:am1,am2,...,amn:")
+    print(" -s EQNS --system-of-equations=EQNS  specify a system of equations to solve")
+    print("                                     Format is: 2*a+3*b+1*c=4:5*a-1*c=1:...")
+    print("Options:")
+    print(" -p MATRIX --matrix-multiply=MATRIX  left multiply matrix provided by -m with the one provided by -p")
+    print(" -i --inverse                        calculate the inverse of matrix")
+    print(" -d --determinant                    calculate the determinant of matrix")
+    print(" -v --verbose-hint                   show verbose hints for Guass Jordan elimination method")
+    print(" -f --use-fraction                   Use fraction instead of decimals")
+    print(" -h, --help                          show this help message and exit")
     sys.exit(1)
 
 main()
