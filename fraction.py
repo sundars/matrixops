@@ -34,22 +34,27 @@ class Fraction():
     def __add__(self, f):
         d = self.denominator * f.denominator
         n = self.numerator * f.denominator + self.denominator * f.numerator
-        return Fraction("{0:d}/{1:d}".format(n, d))
+        return Fraction("{0:d}/{1:d}".format(int(n), int(d)))
 
     def __sub__(self, f):
         d = self.denominator * f.denominator
         n = self.numerator * f.denominator - self.denominator * f.numerator
-        return Fraction("{0:d}/{1:d}".format(n, d))
+        return Fraction("{0:d}/{1:d}".format(int(n), int(d)))
 
     def __mul__(self, f):
         d = self.denominator * f.denominator
         n = self.numerator * f.numerator
-        return Fraction("{0:d}/{1:d}".format(n, d))
+        return Fraction("{0:d}/{1:d}".format(int(n), int(d)))
 
     def __div__(self, f):
         d = self.denominator * f.numerator
         n = self.numerator * f.denominator
-        return Fraction("{0:d}/{1:d}".format(n, d))
+        return Fraction("{0:d}/{1:d}".format(int(n), int(d)))
+
+    def __truediv__(self, f):
+        d = self.denominator * f.numerator
+        n = self.numerator * f.denominator
+        return Fraction("{0:d}/{1:d}".format(int(n), int(d)))
 
     def __pow__(self, power):
         p = math.fabs(power)
@@ -125,10 +130,10 @@ class Fraction():
             print(self.denominator)
 
     def FractionStr(self):
-        s = "{0:d}".format(self.numerator)
+        s = "{0:d}".format(int(self.numerator))
         if self.numerator != 0 and self.denominator != 1:
             s += "/"
-            s += "{0:d}".format(self.denominator)
+            s += "{0:d}".format(int(self.denominator))
 
         return s
 
