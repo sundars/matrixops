@@ -1,2 +1,5 @@
-Works only with python2.7 (not with python3)
-Run 'python matrixops.py -h' for usage details
+Works with both python2.7 and python3
+There are three ways to use this
+    - Run 'python app.py -h' for usage details
+    - Run 'python generic.py -h' for usage details
+    - Run 'python shuffle.py -h' for usage details
