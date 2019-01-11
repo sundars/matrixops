@@ -90,6 +90,7 @@ def interactive(instance, klass, objectType):
                     argTypes = [arg.strip() for arg in defaults[len(defaults)-1].split(',')]
 
             args = [a.strip() for a in commandWithArgs[len(command)+1:-1].split(',')]
+            print(args)
 
             hasReturnVal = True
             argvals = []
@@ -139,7 +140,7 @@ def interactive(instance, klass, objectType):
                             if s == args[loop][7:]:
                                 s = args[loop][7:-1]
                             else:
-                                s += args[loop][:-1]
+                                s = s[:-1]
 
                             argvals.append(s)
 
