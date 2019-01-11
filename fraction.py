@@ -7,7 +7,7 @@ class Fraction():
     denominator = 1
     value = float(0/1)
 
-    def __init__(self, fString):
+    def __init__(self, fString, simplify=True):
         if fString == "":
             return
 
@@ -29,34 +29,35 @@ class Fraction():
             self.numerator *= -1
 
         self.value = float(self.numerator)/float(self.denominator)
-        self.Simplify()
+        if simplify:
+            self.Simplify()
 
-    def __add__(self, f):
+    def __add__(self, f, __atype__="instanceobj, Fraction, returns a fraction"):
         d = self.denominator * f.denominator
         n = self.numerator * f.denominator + self.denominator * f.numerator
         return Fraction("{0:d}/{1:d}".format(int(n), int(d)))
 
-    def __sub__(self, f):
+    def __sub__(self, f, __atype__="instanceobj, Fraction, returns a fraction"):
         d = self.denominator * f.denominator
         n = self.numerator * f.denominator - self.denominator * f.numerator
         return Fraction("{0:d}/{1:d}".format(int(n), int(d)))
 
-    def __mul__(self, f):
+    def __mul__(self, f, __atype__="instanceobj, Fraction, returns a fraction"):
         d = self.denominator * f.denominator
         n = self.numerator * f.numerator
         return Fraction("{0:d}/{1:d}".format(int(n), int(d)))
 
-    def __div__(self, f):
+    def __div__(self, f, __atype__="instanceobj, Fraction, returns a fraction"):
         d = self.denominator * f.numerator
         n = self.numerator * f.denominator
         return Fraction("{0:d}/{1:d}".format(int(n), int(d)))
 
-    def __truediv__(self, f):
+    def __truediv__(self, f, __atype__="instanceobj, Fraction, returns a fraction"):
         d = self.denominator * f.numerator
         n = self.numerator * f.denominator
         return Fraction("{0:d}/{1:d}".format(int(n), int(d)))
 
-    def __pow__(self, power):
+    def __pow__(self, power, __atype__="instanceobj, int, returns a fraction"):
         p = math.fabs(power)
         fd = Fraction.FromDecimal(self.denominator ** p)
         fn = Fraction.FromDecimal(self.numerator ** p)
@@ -65,37 +66,37 @@ class Fraction():
 
         return fn / fd
 
-    def __lt__(self, f):
+    def __lt__(self, f, __atype__="instanceobj, Fraction, returns a boolean"):
         try:
             return self.value < f.value
         except Exception as e:
             return self.value < f
 
-    def __le__(self, f):
+    def __le__(self, f, __atype__="instanceobj, Fraction, returns a boolean"):
         try:
             return self.value <= f.value
         except Exception as e:
             return self.value <= f
 
-    def __gt__(self, f):
+    def __gt__(self, f, __atype__="instanceobj, Fraction, returns a boolean"):
         try:
             return self.value > f.value
         except Exception as e:
             return self.value > f
 
-    def __ge__(self, f):
+    def __ge__(self, f, __atype__="instanceobj, Fraction, returns a boolean"):
         try:
             return self.value >= f.value
         except Exception as e:
             return self.value >= f
 
-    def __eq__(self, f):
+    def __eq__(self, f, __atype__="instanceobj, Fraction, returns a boolean"):
         try:
             return self.value == f.value
         except Exception as e:
             return self.value == f
 
-    def __ne__(self, f):
+    def __ne__(self, f, __atype__="instanceobj, Fraction, returns a boolean"):
         try:
             return self.value != f.value
         except Exception as e:
@@ -113,13 +114,13 @@ class Fraction():
     def __round__(self, n=0):
         return self
 
-    def Reciprocal(self):
+    def Reciprocal(self, __atype__="instanceobj, returns a fraction"):
         return Fraction("{0:d}/{1:d}".format(self.denominator, self.numerator))
 
-    def Simplify(self):
+    def Simplify(self, __atype__="instanceobj, returns nothing but simplifies fraction in place"):
         gcd = Fraction.GCD(abs(self.numerator), self.denominator)
-        self.numerator /= gcd
-        self.denominator /= gcd
+        self.numerator //= gcd
+        self.denominator //= gcd
 
     def PrettyPrint(self):
         print(self.numerator, end='')
@@ -137,21 +138,21 @@ class Fraction():
 
         return s
 
-    def ContinuedFraction(self):
-        continuedFraction = [self.numerator/self.denominator]
+    def ContinuedFraction(self, __atype__="instanceobj, returns nothing but prints this as a continued fraction"):
+        continuedFraction = [self.numerator//self.denominator]
         Fraction.EuclidContinuedFraction(self.numerator, self.denominator, continuedFraction)
-        Fraction.PrettyPrintContinuedFraction(continuedFraction, self.numerator/abs(self.numerator))
+        Fraction.PrettyPrintContinuedFraction(continuedFraction, self.numerator//abs(self.numerator))
 
     @classmethod
-    def LCM(cls, n1, n2):
+    def LCM(cls, n1, n2, __atype__="classobj, int, int, returns an integer"):
         return Fraction.EuclidLCM(n1, n2)
 
     @classmethod
-    def GCD(cls, n1, n2):
+    def GCD(cls, n1, n2, __atype__="classobj, int, int, returns an integer"):
         return Fraction.EuclidGCD(n1, n2)
 
     @classmethod
-    def PrimeFactors(cls, num):
+    def PrimeFactors(cls, num, __atype__="classobj, int, returns a list of integers"):
         if num <= 0:
             raise Exception("Only numbers greater than 0 please")
 
@@ -159,19 +160,19 @@ class Fraction():
 
         while num % 2 == 0:
             factors.append(2)
-            num /= 2
+            num //= 2
 
         for i in range(3, int(math.sqrt(num))+1, 2):
             while num % i == 0:
                 factors.append(i)
-                num /= i
+                num //= i
 
         if num != 1: factors.append(num)
 
         return factors
 
     @classmethod
-    def PrimeFactorsLCM(cls, n1, n2):
+    def PrimeFactorsLCM(cls, n1, n2, __atype__="classobj, int, int, returns an integer"):
         factors1 = Fraction.PrimeFactors(n1)
         factors2 = Fraction.PrimeFactors(n2)
 
@@ -193,7 +194,7 @@ class Fraction():
         return lcm
 
     @classmethod
-    def PrimeFactorsGCD(cls, n1, n2):
+    def PrimeFactorsGCD(cls, n1, n2, __atype__="classobj, int, int, returns an integer"):
         factors1 = Fraction.PrimeFactors(n1)
         factors2 = Fraction.PrimeFactors(n2)
 
@@ -206,11 +207,11 @@ class Fraction():
         return commonFactor
 
     @classmethod
-    def EuclidLCM(cls, n1, n2):
-        return (n1 * n2)/Fraction.EuclidGCD(n1, n2)
+    def EuclidLCM(cls, n1, n2, __atype__="classobj, int, int, returns an integer"):
+        return (n1 * n2)//Fraction.EuclidGCD(n1, n2)
 
     @classmethod
-    def EuclidGCD(cls, n1, n2):
+    def EuclidGCD(cls, n1, n2, __atype__="classobj, int, int, returns an integer"):
         if (max(n1, n2) % min(n1, n2) == 0):
             return min(n1, n2)
 
@@ -219,20 +220,20 @@ class Fraction():
     @classmethod
     def EuclidContinuedFraction(cls, n1, n2, cF):
         if (max(n1, n2) % min(n1, n2) == 0):
-            cF.append(n1/n2)
+            cF.append(n1//n2)
             return
 
-        cF.append(max(n1, n2)/min(n1, n2))
-        Fraction.EuclidContinuedFraction(min(n1, n2), max(n1, n2) % min(n1, n2))
+        cF.append(max(n1, n2)//min(n1, n2))
+        Fraction.EuclidContinuedFraction(min(n1, n2), max(n1, n2) % min(n1, n2), cF)
 
     @classmethod
-    def FromDecimal(cls, decimal):
+    def FromDecimal(cls, decimal, __atype__="classobj, float, returns a fraction"):
         continuedFraction, sign = Fraction.GenerateContinuedFraction(decimal)
         return Fraction.RollupContinuedFraction(continuedFraction, sign)
 
     # Rollup the continued fraction
     @classmethod
-    def RollupContinuedFraction(cls, continuedFraction, sign):
+    def RollupContinuedFraction(cls, continuedFraction, sign=1, __atype__="classobj, list:int, returns a fraction"):
         pf = Fraction('0/1')
         for i in range(len(continuedFraction), 0, -1):
             if i == 1:
@@ -246,7 +247,7 @@ class Fraction():
 
     # Generate a continued fraction from a decimal
     @classmethod
-    def GenerateContinuedFraction(cls, decimal):
+    def GenerateContinuedFraction(cls, decimal, __atype__="classobj, float, returns a list of integers and the sign of that list"):
         continuedFraction = []
         d, sign = (math.fabs(decimal), int(not decimal or decimal/math.fabs(decimal)))
         whole, remaining = (int(d), float("0.{0:s}".format(str(d)[(len(str(int(d)))+1):])))
@@ -262,7 +263,7 @@ class Fraction():
         return continuedFraction, sign
 
     @classmethod
-    def PrintContinuedFraction(cls, decimal):
+    def PrintContinuedFraction(cls, decimal, __atype__="classobj, float, returns nothing but prints decimal as a continued fraction"):
         continuedFraction, sign = Fraction.GenerateContinuedFraction(decimal)
         Fraction.PrettyPrintContinuedFraction(continuedFraction, sign)
 

@@ -86,7 +86,7 @@ class LinearEquations():
                 if i != len(variables)-1:
                     coeffStr += ","
 
-            rhsStr += str(float(equation['rhs']))
+            rhsStr += equation['rhs']
             rhsStr += ":"
             coeffStr += ":"
 
@@ -100,13 +100,54 @@ class LinearEquations():
         if self.nVariables != self.nEquations:
             raise Exception("Numbers of variables ({0:d}) and number of equations don't match ({1:d})".format(self.nVariables, self.nEquations))
 
-    def CheckSolution(self, soln):
+    def __str__(self):
+        return self.LinearEquationsStr()
+
+    def LinearEquationsStr(self, __atype__="instanceobj, returns system of equations as a string"):
+        s = ""
+        coefficients = self.A.MatrixStr().split(':')
+        rhs = self.B.MatrixStr().split(':')
+        variables = self.X.MatrixStr().split(':')
+
+        for i in range(0, self.nEquations):
+            eqnCoeff = coefficients[i].split(',')
+            for j in range(0, self.nVariables):
+                if eqnCoeff[j] == 0:
+                    continue
+
+                s += eqnCoeff[j] + "*" + variables[j]
+                if j != self.nVariables-1:
+                    if eqnCoeff[j+1][:1] != '-':
+                        s += "+"
+
+            s += "=" + rhs[i]
+            if i != self.nEquations -1:
+                s += ':'
+
+        return s
+
+    def Solve(self, __atype__="instanceobj, returns solution matrix to the system of equations"):
+        inv = self.A.Inverse()
+        return inv.Multiply(self.B)
+
+    def CheckSolution(self, soln, __atype__="instanceobj, Matrix, returns boolean if solution is correct"):
+        if type(soln) is builtin.str:
+            return self.CheckSolution(Matrix(soln, self.keepFraction))
+
         if soln.rSize != self.nVariables and soln.cSize != 1:
             raise Exception("Solution matrix should be a {0:d}x1 matrix".format( self.nVariables))
 
         return self.A.Multiply(soln).IsEqual(self.B)
 
-    def PrettyPrint(self):
+    def PrettyPrint(self, s='', __atype__="instanceobj, str, returns nothing just prints"):
+        if s != '':
+            try:
+                e = LinearEquations(s, self.keepFraction)
+                return e.PrettyPrint()
+            except Exception as e:
+                m = Matrix(s, self.keepFraction)
+                return m.PrettyPrint()
+
         a = Matrix.CreateBlank(self.nEquations, self.nVariables)
         for i in range (0, a.rSize):
             for j in range(0, a.cSize):

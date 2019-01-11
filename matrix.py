@@ -28,7 +28,10 @@ class Matrix():
                         else:
                             self.elements.append(float(element))
                     except Exception as e:
-                        self.elements.append(element)
+                        try:
+                            self.elements.append(Fraction(element))
+                        except Exception as e:
+                            self.elements.append(element)
 
                 self.rSize = self.cSize = int(math.sqrt(len(self.elements)))
                 if self.rSize ** 2 != len(self.elements):
@@ -46,7 +49,10 @@ class Matrix():
                             else:
                                 self.elements.append(float(element))
                         except Exception as e:
-                            self.elements.append(element)
+                            try:
+                                self.elements.append(Fraction(element))
+                            except Exception as e:
+                                self.elements.append(element)
 
                 self.cSize = int(len(self.elements)/self.rSize)
                 if self.rSize*self.cSize != len(self.elements):
@@ -55,24 +61,44 @@ class Matrix():
             self.isValid = True
 
     def __str__(self):
-        self.PrettyPrint()
+        return self.MatrixStr()
+
+    def MatrixStr(self, __atype__="instanceobj, returns matrix as a string"):
+        s = ""
+        for i in range(0, self.rSize):
+            for j in range(0, self.cSize):
+                x = i * self.cSize + j
+                if self.keepFraction:
+                    s += str(self.elements[x])
+                else:
+                    s += self.elements[x]
+                if j != self.cSize-1:
+                    s += ','
+            if i != self.rSize-1:
+                s += ':'
+
+        return s
 
     # Return the element in rth row cth column
-    def GetElement(self, r, c):
+    def GetElement(self, r, c, __atype__="instanceobj, int, int, returns matrix element in row,column"):
         return self.elements[r * self.cSize + c]
 
     # Set the element in rth row cth column to val
-    def SetElement(self, r, c, val):
+    def SetElement(self, r, c, val, __atype__="instanceobj, int, int, float, returns nothing sets matrix element in place"):
+        if type(val) is float and self.keepFraction:
+            self.elements[r * self.cSize + c] = Fraction.FromDecimal(val)
+            return
+
         self.elements[r * self.cSize + c] = val
 
     # Check if element value is val
-    def IsValue(self, r, c, val):
+    def IsValue(self, r, c, val, __atype__="instanceobj, int, int, float, returns boolean"):
         try:
             return math.fabs(self.elements[r * self.cSize + c] - val) < 0.001
         except Exception as e:
             return self.elements[r * self.cSize + c] == val
 
-    def MakeCopy(self):
+    def MakeCopy(self, __atype__="instanceobj, returns a copy of the original matrix"):
         m = Matrix.CreateBlank(self.rSize, self.cSize, self.keepFraction)
         for i in range(0, m.rSize * m.cSize):
             m.elements[i] = self.elements[i]
@@ -80,16 +106,22 @@ class Matrix():
         return m
 
     # Return True if and only if it is a square matrix
-    def IsSquare(self):
+    def IsSquare(self, __atype__="instanceobj, returns boolean"):
         return self.rSize == self.cSize
 
     # Return True if and only m can be left multiplied by self
-    def CanMultiply(self, m):
+    def CanMultiply(self, m, __atype__="instanceobj, str, returns boolean"):
+        if type(m) is builtin.str:
+            return self.CanMultiply(Matrix(m, self.keepFraction))
+
         return self.cSize == m.rSize
 
     # Matrix multiplication - m left multiplied by self
     # Output is the product of the two matrices
-    def Multiply(self, m):
+    def Multiply(self, m, __atype__="instanceobj, str, returns product matrix"):
+        if type(m) is builtin.str:
+            return self.Multiply(Matrix(m, self.keepFraction))
+
         if not self.CanMultiply(m):
             raise Exception("Cannot multiply these two matrices")
 
@@ -109,7 +141,7 @@ class Matrix():
         return p
 
     # Find determinant - a recursive function
-    def Determinant(self):
+    def Determinant(self, __atype__="instanceobj, returns determinant"):
         if not self.IsSquare():
             raise Exception("Cannot calculate determinant of non-square matrix")
 
@@ -125,7 +157,7 @@ class Matrix():
         return value
 
     # Return matrix of minors - only for a square matrix
-    def MatrixOfMinors(self):
+    def MatrixOfMinors(self, __atype__="instanceobj, returns matrix of minors"):
         if not self.IsSquare():
             raise Exception("Cannot calculate matrix of minors of non-square matrix")
 
@@ -139,7 +171,7 @@ class Matrix():
         return minors
 
     # Return matrix of cofactors - only for a square matrix
-    def MatrixOfCofactors(self):
+    def MatrixOfCofactors(self, __atype__="instanceobj, returns cofactors matrix"):
         if not self.IsSquare():
             raise Exception("Cannot calculate matrix of cofactors of non-square matrix")
 
@@ -171,7 +203,7 @@ class Matrix():
                 self.elements[x1] = self.elements[x1] * m1 - self.elements[x2] * m2
 
     # Transpose of a matrix
-    def Transpose(self):
+    def Transpose(self, __atype__="instanceobj, returns transpose"):
         t = Matrix.CreateBlank(self.cSize, self.rSize, self.keepFraction)
 
         for i in range(0, self.rSize):
@@ -183,7 +215,7 @@ class Matrix():
         return t
 
     # Return Inverse of Matrix - must be square
-    def Inverse(self):
+    def Inverse(self, __atype__="instanceobj, returns inverse"):
         if not self.IsSquare():
             raise Exception("Cannot calculate inverse of non-square matrix")
 
@@ -196,7 +228,7 @@ class Matrix():
         return inv
 
     # Any 2 matrices
-    def IsEqual(self, m):
+    def IsEqual(self, m, __atype__="instanceobj, str, returns boolean if matrix is equal to one specified by str"):
         if len(self.elements) != len(m.elements):
             return False
 
@@ -225,14 +257,14 @@ class Matrix():
         return s
 
     # Multiply matrix with a scalar
-    def ScalarMultiply(self, val):
+    def ScalarMultiply(self, val, __atype__="instanceobj, float, returns nothing but multiplies matrix in place with float"):
         for i in range(0, self.rSize):
             for j in range(0, self.cSize):
                 x = i * self.cSize + j
                 self.elements[x] = self.elements[x] * val
 
     # Returns true if it is an identity (and therefore square) matrix
-    def IsIdentityMatrix(self):
+    def IsIdentityMatrix(self, __atype__="instanceobj, returns boolean"):
         if not self.IsSquare(): return False
 
         for i in range(0, self.rSize):
@@ -263,7 +295,11 @@ class Matrix():
         return l
 
     # Pretty print a matrix, aligning rows and columns
-    def PrettyPrint(self):
+    def PrettyPrint(self, s='', __atype__="instanceobj, str, takes string  - returns nothing prints matrix nicely"):
+        if s != '':
+            m = Matrix(s, self.keepFraction)
+            return m.PrettyPrint()
+
         m = Matrix.CreateBlank(self.rSize, self.cSize, self.keepFraction)
         for i in range(0, self.rSize):
             for j in range(0, self.cSize):
@@ -282,7 +318,13 @@ class Matrix():
 
     # Pretty print two  matrices side by side
     @classmethod
-    def PrettyPrintTwoMatrices(cls, matrix1, matrix2):
+    def PrettyPrintTwoMatrices(cls, matrix1, matrix2, __atype__="classobj, str, str, returns nothing but prints 2 matrices"):
+        if type(matrix1) is builtin.str:
+            matrix1 = Matrix(matrix1, True)
+
+        if type(matrix2) is builtin.str:
+            matrix2 = Matrix(matrix2, True)
+
         m1 = Matrix.CreateBlank(matrix1.rSize, matrix1.cSize, matrix1.keepFraction)
         for i in range (0, matrix1.rSize):
             for j in range(0, matrix1.cSize):
@@ -322,7 +364,7 @@ class Matrix():
 
     # Returns a square matrix
     @classmethod
-    def GetIdentityMatrix(cls, size, keepFraction=False):
+    def GetIdentityMatrix(cls, size, keepFraction=False, __atype__="classobj, int, returns identity matrix"):
         m = Matrix.CreateBlank(size, size, keepFraction)
 
         for i in range(0, size):

@@ -15,7 +15,7 @@ class Cards():
     def __init__(self):
         self.Reset()
 
-    def Reset(self):
+    def Reset(self, __atype__="instanceobj, returns nothing - resets deck"):
         self.cards = []
         self.numSuits = 4
         self.cardsPerSuit = 13
@@ -39,7 +39,7 @@ class Cards():
 
         return card
 
-    def Test(self):
+    def Test(self, __atype__="instanceobj, returns result of a guessing test"):
         if self.correctGuesses > -1:
             return self.correctGuesses
 
@@ -58,7 +58,7 @@ class Cards():
 
         return float(self.correctGuesses)
 
-    def ShuffleAndTestMany(self, numShuffles=1, numTests=100, sType='Riffle'):
+    def ShuffleAndTestMany(self, numShuffles=1, numTests=100, sType='Riffle', __atype__="instanceobj, int, int, str, returns result of a series of shuffles and series of test"):
         totalCorrect = 0
         for i in range(0, numTests):
             self.Reset()
@@ -67,13 +67,13 @@ class Cards():
 
         return float(totalCorrect)/float(numTests)
 
-    def ShuffleMany(self, numShuffles, sType='Riffle'):
+    def ShuffleMany(self, numShuffles, sType='Riffle', __atype__="instanceobj, int, str, returns nothing but does many shuffles"):
         for i in range(0, numShuffles):
             self.Shuffle(sType)
 
         return
 
-    def Shuffle(self, sType='Riffle'):
+    def Shuffle(self, sType='Riffle', __atype__="instanceobj, str, returns nothing does a 'Riffle' 'Normal' or 'Perfect' shuffle"):
         if sType == 'Riffle':
             self.RiffleShuffle()
 
@@ -88,7 +88,7 @@ class Cards():
 
         return
 
-    def RiffleShuffle(self):
+    def RiffleShuffle(self, __atype__="instanceobj, returns nothing does a 'Riffle' shuffle"):
         cut = random.randint(5, self.deckSize-5)
         left = self.cards[:cut]
         right = self.cards[cut:]
@@ -127,7 +127,7 @@ class Cards():
 
         return
 
-    def PerfectShuffle(self):
+    def PerfectShuffle(self, __atype__="instanceobj, returns nothing does a 'Perfect' shuffle"):
         left = self.cards[:(self.deckSize/2)]
         right = self.cards[(self.deckSize/2):]
 
@@ -143,7 +143,7 @@ class Cards():
 
         return
 
-    def NormalShuffle(self):
+    def NormalShuffle(self, __atype__="instanceobj, returns nothing does a 'Normal' shuffle"):
         count = len(self.cards)
         cut1 = random.randint(1, self.deckSize-1)
         cut2 = random.randint(1, self.deckSize-1)
