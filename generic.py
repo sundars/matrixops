@@ -16,11 +16,6 @@ def main():
 
 # Interactive mode
 def interactive(instance, klass, objectType):
-    mKlass = None
-    if objectType == 'LinearEquations':
-        # Useful thing to have when we are dealing with Linear Equations
-        mKlass = globals()['Matrix']
-
     print("Instance of class {0:s} is:".format(objectType))
     instance.PrettyPrint()
 

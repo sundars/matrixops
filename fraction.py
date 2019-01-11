@@ -274,7 +274,7 @@ class Fraction():
         # Print "-1 * (" if it is a negative number
         if sign < 0:
             print("-1 * (", end='')
-            count += 7
+            count += 6
 
         if continuedFraction[len(continuedFraction)-1] == 1:
             continuedFraction[len(continuedFraction)-2] += 1
@@ -287,7 +287,7 @@ class Fraction():
             # If last number, print a new line and we are done
             if i+1 == len(continuedFraction):
                 if sign < 0: print(")")  # if a negative number print closing ")" before new line
-                print()
+                print('')
                 return
 
             # Print "+ 1" and a new line
@@ -295,20 +295,19 @@ class Fraction():
             print(1)
 
             # Increment count by the length of the continued fraction and 4 more for the + 1
-            count += len(str(continuedFraction[i]))+4
+            count += len(str(continuedFraction[i]))+3
 
-            # Create a space string of length count and print and increment count by 1
+            # Create a space string of length count and print
             s = ""
             for j in range(0, count): 
                 s += " "
             print(s, end='')
-            count += 1
 
-            # Calculate length of the fraction line it is length of next number plus 6 (for "+ 1"), unless last but one
+            # Calculate length of the fraction line it is length of next number plus 4 (for " + 1"), unless last but one
             if i+2 == len(continuedFraction):
                 countL = len(str(continuedFraction[i+1]))
             else:
-                countL = len(str(continuedFraction[i+1]))+6
+                countL = len(str(continuedFraction[i+1]))+4
 
             # Generate the fraction line and print with a new line
             l = ""
