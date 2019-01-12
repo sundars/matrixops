@@ -71,7 +71,7 @@ class Matrix():
                 if self.keepFraction:
                     s += str(self.elements[x])
                 else:
-                    s += self.elements[x]
+                    s += str(self.elements[x])
                 if j != self.cSize-1:
                     s += ','
             if i != self.rSize-1:
@@ -111,6 +111,7 @@ class Matrix():
 
     # Return True if and only m can be left multiplied by self
     def CanMultiply(self, m, __atype__="instanceobj, str, returns boolean"):
+        Matrix.MakeConsistent(self, m)
         if type(m) is builtin.str:
             return self.CanMultiply(Matrix(m, self.keepFraction))
 
@@ -119,6 +120,7 @@ class Matrix():
     # Matrix multiplication - m left multiplied by self
     # Output is the product of the two matrices
     def Multiply(self, m, __atype__="instanceobj, str, returns product matrix"):
+        Matrix.MakeConsistent(self, m)
         if type(m) is builtin.str:
             return self.Multiply(Matrix(m, self.keepFraction))
 
@@ -294,6 +296,15 @@ class Matrix():
 
         return l
 
+    # Convert elements from float to fraction
+    def ToFraction(self):
+        for i in range(0, self.rSize):
+            for j in range(0, self.cSize):
+                x = i * self.cSize + j
+                if type(self.elements[x]) is float:
+                    self.elements[x] = Fraction.FromDecimal(self.elements[x])
+
+
     # Pretty print a matrix, aligning rows and columns
     def PrettyPrint(self, s='', __atype__="instanceobj, str, takes string  - returns nothing prints matrix nicely"):
         if s != '':
@@ -386,6 +397,7 @@ class Matrix():
     def GetRowColumn(cls, m1, m2, row, column):
         r = []
         c = []
+        Matrix.MakeConsistent(m1, m2)
         for i in range(0, m1.cSize):
             x = row * m1.cSize + i
             r.append(m1.elements[x])
@@ -412,3 +424,16 @@ class Matrix():
                     b += ','
 
         return Matrix(b, keepFraction)
+
+    # If either matrix is of type fraction, make the other one as well
+    @classmethod
+    def MakeConsistent(cls, m1, m2):
+        if not m1.keepFraction and not m2.keepFraction:
+            return
+
+        if not m1.keepFraction:
+            m1.ToFraction()
+            return
+
+        m2.ToFraction()
+        return

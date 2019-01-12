@@ -90,7 +90,6 @@ def interactive(instance, klass, objectType):
                     argTypes = [arg.strip() for arg in defaults[len(defaults)-1].split(',')]
 
             args = [a.strip() for a in commandWithArgs[len(command)+1:-1].split(',')]
-            print(args)
 
             hasReturnVal = True
             argvals = []
