@@ -58,7 +58,6 @@ class Hangman:
 
         self.PrintCorrect()
         self.GetNewWord()
-        self.PrettyPrint()
 
     def GuessWord(self, w, __atype__='instanceobj, str, checks if word is right and returns nothing'):
         word = list(w.lower())
@@ -71,7 +70,6 @@ class Hangman:
 
         self.PrintCorrect()
         self.GetNewWord()
-        self.PrettyPrint()
 
     def PrintCorrect(self):
         print("")
