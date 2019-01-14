@@ -6,6 +6,7 @@ class bcolors:
     FAIL = '\033[91m'
     ENDC = '\033[0m'
     BOLD = '\033[1m'
+    ITALIC = '\33[2m'
     UNDERLINE = '\033[4m'
 
     # Foreground

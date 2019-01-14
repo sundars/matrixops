@@ -218,6 +218,9 @@ def parseArgs():
 
             instance = klass(farg, False)
 
+        if (objectType == 'Hangman'):
+            instance = klass(True)
+
         else:
             instance = klass()
 
