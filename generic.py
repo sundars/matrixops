@@ -2,6 +2,7 @@ from __future__ import print_function
 from overrides import *
 import sys, getopt, inspect
 from cards import Cards
+from hangman import Hangman
 from fraction import Fraction
 from matrix import Matrix
 from equation import LinearEquations
@@ -217,7 +218,7 @@ def parseArgs():
 
             instance = klass(farg, False)
 
-        if (objectType == 'Cards'):
+        else:
             instance = klass()
 
         return (instance, klass, objectType)
@@ -242,7 +243,7 @@ def usage():
     print('')
     print(sys.argv[0] + " [options]")
     print("Required:")
-    print(" -c --class-type                     one of 'Matrix', 'LinearEquations', 'Fraction' or 'Cards'")
+    print(" -c --class-type                     one of 'Matrix', 'LinearEquations', 'Fraction', 'Cards' or 'Hangman'")
     print("Options:")
     print(" -h, --help                          show this help message and exit")
     sys.exit(1)
