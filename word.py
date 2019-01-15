@@ -9,7 +9,7 @@ class Oxford:
     urlBase = 'https://od-api.oxforddictionaries.com:443/api/v1/'
     language = 'en'
     wordList = []
-    minWordLength = 5
+    minWordLength = 7
     category = ''
     numberOfWords = 0
     wordInUse = None
@@ -61,8 +61,8 @@ class Oxford:
         try:
             response = self.GetRequest(url)
             results = dict(response.json())['results']
-            lexCat = results[0]['lexicalEntries'][0]['lexicalCategory'].encode('ascii', 'ignore')
-            defn = results[0]['lexicalEntries'][0]['entries'][0]['senses'][0]['definitions'][0].encode('ascii', 'ignore')
+            lexCat = results[0]['lexicalEntries'][0]['lexicalCategory'].encode('utf-8')
+            defn = results[0]['lexicalEntries'][0]['entries'][0]['senses'][0]['definitions'][0].encode('utf-8')
 
             retVal = '[{0:s}] - {1:s}'.format(lexCat, defn)
             return retVal

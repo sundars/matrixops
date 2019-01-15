@@ -110,7 +110,7 @@ class Hangman:
                         length += len(words[i]) + 1
                     print('')
                     i += 1
-                print(bcolors.ENDC)
+                print(bcolors.ENDC,end='')
             else:
                 print(bcolors.ITALIC + '  ' + entry + bcolors.ENDC)
         print("------------------------------------------------------------------------------------")
@@ -141,7 +141,7 @@ class Hangman:
                         length += len(words[i]) + 1
                     print('')
                     i += 1
-                print(bcolors.ENDC)
+                print(bcolors.ENDC,end='')
             else:
                 print(bcolors.ITALIC + '  ' + entry + bcolors.ENDC)
         print("------------------------------------------------------------------------------------")
