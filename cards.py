@@ -2,7 +2,7 @@ from __future__ import print_function
 import sys, random
 from colors import bcolors
 
-class Cards():
+class Cards:
     deckSize = 52
     numSuits = 4
     cardsPerSuit = 13

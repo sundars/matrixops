@@ -1,6 +1,7 @@
 from __future__ import print_function
 from colors import bcolors
 from word import Oxford
+from pause import Pause
 import random
 
 class Hangman:
@@ -42,7 +43,7 @@ class Hangman:
         except Exception as e:
             print(e)
 
-    def GuessLetter(self, s, __atype__='instanceobj, str, checks if letter exists and returns nothing'):
+    def GuessLetter(self, s, __atype__='instanceobj, str, checks if letter exists and returns'):
         s = s.lower()
         if len(s) != 1:
             raise Exception("Guess only one letter at a time, please")
@@ -65,26 +66,33 @@ class Hangman:
 
         for i in range(0, len(self.wordInPlay)):
             if self.guessedSoFar[i] != self.wordInPlay[i]:
-                return
+                hangPos = self.numberAttempted - self.numberCorrect
+                if hangPos > 6:
+                    self.PrettyPrint()
+                    return Pause()
+
+                return None
 
         self.PrintCorrect()
         self.GetNewWord()
+        return Pause()
 
-    def GuessWord(self, w, __atype__='instanceobj, str, checks if word is right and returns nothing'):
+    def GuessWord(self, w, __atype__='instanceobj, str, checks if word is right and returns'):
         word = list(w.lower())
         if len(word) != len(self.wordInPlay):
             self.PrintWrong()
             self.GetNewWord()
-            return
+            return Pause()
 
         for i in range(0, len(word)):
             if word[i] != self.wordInPlay[i]:
                 self.PrintWrong()
                 self.GetNewWord()
-                return
+                return Pause()
 
         self.PrintCorrect()
         self.GetNewWord()
+        return Pause()
 
     def PrintCorrect(self):
         print("")
@@ -279,4 +287,3 @@ class Hangman:
         if hangPos > 6:
             self.PrintWrong()
             self.GetNewWord()
-            self.PrettyPrint()

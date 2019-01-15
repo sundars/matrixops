@@ -4,7 +4,7 @@ import math
 from matrix import Matrix
 from collections import OrderedDict
 
-class LinearEquations():
+class LinearEquations:
     A = None
     B = None
     X = None

@@ -2,7 +2,7 @@ from __future__ import print_function
 import math
 from collections import OrderedDict
 
-class Fraction():
+class Fraction:
     numerator = 0
     denominator = 1
     value = float(0/1)

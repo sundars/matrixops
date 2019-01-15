@@ -6,17 +6,19 @@ from hangman import Hangman
 from fraction import Fraction
 from matrix import Matrix
 from equation import LinearEquations
+from pause import Pause
 
 def main():
     instance, klass, objectType = parseArgs()
+    pauseKlass = globals()['Pause']
 
     print("Entering interactive mode for object {0:s}".format(objectType))
-    interactive(instance, klass, objectType)
+    interactive(instance, klass, objectType, pauseKlass)
 
     sys.exit(0)
 
 # Interactive mode
-def interactive(instance, klass, objectType):
+def interactive(instance, klass, objectType, pauseKlass):
     print("Instance of class {0:s} is:".format(objectType))
     instance.PrettyPrint()
 
@@ -153,10 +155,14 @@ def interactive(instance, klass, objectType):
 
             returnval = method_to_call(*argvals)
 
-            if hasReturnVal:
+            if hasReturnVal and returnval is not None:
                 if isinstance(returnval, klass):
                     print("{0:s} {1:s} and result is".format(commandWithArgs, argTypes[len(argTypes)-1]))
                     returnval.PrettyPrint()
+
+                elif isinstance(returnval, pauseKlass):
+                    pass
+
                 else:
                     print("{0:s} {1:s} and result is".format(commandWithArgs, argTypes[len(argTypes)-1]), returnval)
 

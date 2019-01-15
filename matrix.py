@@ -3,7 +3,7 @@ from overrides import *
 import math
 from fraction import Fraction
 
-class Matrix():
+class Matrix:
     elements = []
     rSize = 0
     cSize = 0
