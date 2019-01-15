@@ -65,15 +65,20 @@ class Oxford:
         try:
             response = self.GetRequest(url)
             results = dict(response.json())['results']
-            lexCat = results[0]['lexicalEntries'][0]['lexicalCategory'].encode('utf-8')
-            defn = results[0]['lexicalEntries'][0]['entries'][0]['senses'][0]['definitions'][0].encode('utf-8')
+            lexicalEntries = results[0]['lexicalEntries']
+            for lexicalEntry in lexicalEntries:
+                entries = lexicalEntry['entries']
+                for entry in entries:
+                    if 'senses' in entry:
+                        lexCat = lexicalEntry['lexicalCategory'].encode('utf-8')
+                        defn = entry['senses'][0]['definitions'][0].encode('utf-8')
 
-            try:
-                retVal = '[{0:s}] - {1:s}'.format(lexCat, defn)
-            except Exception as e:
-                retVal = '[{0:s}] - {1:s}'.format(lexCat.decode('utf-8'), defn.decode('utf-8'))
+                        try:
+                            retVal = '[{0:s}] - {1:s}'.format(lexCat, defn)
+                        except Exception as e:
+                            retVal = '[{0:s}] - {1:s}'.format(lexCat.decode('utf-8'), defn.decode('utf-8'))
 
-            return retVal
+                        return retVal
 
         except Exception as e:
             print(e)
