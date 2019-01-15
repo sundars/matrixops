@@ -78,16 +78,15 @@ class Hangman:
         return Pause()
 
     def GuessWord(self, w, __atype__='instanceobj, str, checks if word is right and returns'):
+        self.numberAttempted = self.numberCorrect + 7
         word = list(w.lower())
         if len(word) != len(self.wordInPlay):
-            self.PrintWrong()
-            self.GetNewWord()
+            self.PrettyPrint()
             return Pause()
 
         for i in range(0, len(word)):
             if word[i] != self.wordInPlay[i]:
-                self.PrintWrong()
-                self.GetNewWord()
+                self.PrettyPrint()
                 return Pause()
 
         self.PrintCorrect()

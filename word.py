@@ -86,14 +86,24 @@ class Oxford:
 
     def ChangeCategory(self, category=''):
         self.wordList = []
-        while len(self.wordList) is 0:
-            if len([i for i in range(len(self.domainList)) if self.domainList[i].lower() == category.lower()]) == 0:
+        while len(self.wordList) == 0:
+            domainIndex = -1
+            try:
+                if category != '':
+                    domainIndex = [d.lower() for d in self.domainList].index(category.lower())
+                    category = ''
+
+            except ValueError as e:
+                print("Category <{0:s}> is not one of Oxford dictionary's word categories. ".format(category), end='')
+                dList = [d.lower() for d in self.domainList]
+                for domain in dList:
+                    if domain.find(category.lower()) > -1 or category.lower().find(domain) > -1:
+                        domainIndex = dList.index(domain)
+
+            if domainIndex == -1:
                 domainIndex = random.randint(0, len(self.domainList)-1)
                 while self.category == self.domainList[domainIndex]:
                     domainIndex = random.randint(0, len(self.domainList)-1)
-            else:
-                domainIndex = [d.lower() for d in self.domainList].index(category.lower())
-                category = ''
 
             url = self.urlBase + 'wordlist/' + self.language + '/domains={0:s}?word_length=>{1:d}'.format(
                   self.domainList[domainIndex], self.minWordLength)
@@ -123,6 +133,7 @@ class Oxford:
                 print(e)
                 return ''
 
+        print("Changing category to <{0:s}>".format(self.category))
         return self.category
 
     def GetWord(self):
