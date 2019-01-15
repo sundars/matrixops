@@ -89,30 +89,62 @@ class Hangman:
     def PrintCorrect(self):
         print("")
         print("")
-        print("----------------------------------------------------------------------------------------")
+        print("------------------------------------------------------------------------------------")
         print("  You got it!")
         print("  The word is " + bcolors.BOLD, end='')
         for i in range(0, len(self.wordInPlay)):
             print(self.wordInPlay[i],end='')
         print(bcolors.ENDC)
         if self.useOxford:
-            print(bcolors.ITALIC + '  {0:s}'.format(self.oxford.GetEntry()) + bcolors.ENDC)
-        print("----------------------------------------------------------------------------------------")
+            entry = '{0:s}'.format(self.oxford.GetEntry())
+            if len(entry) > 80:
+                words = entry.split(' ')
+                print(bcolors.ITALIC, end='')
+                i = 0
+                while i < len(words):
+                    print('  ' + words[i],end='')
+                    length = len(words[i]) + 2
+                    while i < len(words)-1 and length+len(words[i+1])+1 < 80:
+                        i += 1
+                        print(' ' + words[i], end='')
+                        length += len(words[i]) + 1
+                    print('')
+                    i += 1
+                print(bcolors.ENDC)
+            else:
+                print(bcolors.ITALIC + '  ' + entry + bcolors.ENDC)
+        print("------------------------------------------------------------------------------------")
         print("")
         print("")
 
     def PrintWrong(self):
         print("")
         print("")
-        print("----------------------------------------------------------------------------------------")
+        print("------------------------------------------------------------------------------------")
         print("  Sorry, you have been hung out to dry!")
         print("  The word is " + bcolors.BOLD, end='')
         for i in range(0, len(self.wordInPlay)):
             print(self.wordInPlay[i],end='')
         print(bcolors.ENDC)
         if self.useOxford:
-            print(bcolors.ITALIC + '  {0:s}'.format(self.oxford.GetEntry()) + bcolors.ENDC)
-        print("----------------------------------------------------------------------------------------")
+            entry = '{0:s}'.format(self.oxford.GetEntry())
+            if len(entry) > 80:
+                words = entry.split(' ')
+                print(bcolors.ITALIC, end='')
+                i = 0
+                while i < len(words):
+                    print('  ' + words[i],end='')
+                    length = len(words[i]) + 2
+                    while i < len(words)-1 and length+len(words[i+1])+1 < 80:
+                        i += 1
+                        print(' ' + words[i], end='')
+                        length += len(words[i]) + 1
+                    print('')
+                    i += 1
+                print(bcolors.ENDC)
+            else:
+                print(bcolors.ITALIC + '  ' + entry + bcolors.ENDC)
+        print("------------------------------------------------------------------------------------")
         print("")
         print("")
 

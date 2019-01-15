@@ -33,12 +33,16 @@ class Oxford:
             self.category = self.domainList[domainIndex]
             self.numberOfWords = metadata['total']
 
+            self.wordList = []
             for result in results:
-                word = dict()
-                word['word'] = '{0:s}'.format(result['word'])
-                word['id'] = '{0:s}'.format(result['id'])
+                try:
+                    word = dict()
+                    word['word'] = '{0:s}'.format(result['word'])
+                    word['id'] = '{0:s}'.format(result['id'])
 
-                self.wordList.append(word)
+                    self.wordList.append(word)
+                except Exception as e:
+                    pass
 
         except Exception as e:
             print(e)
@@ -57,8 +61,10 @@ class Oxford:
         try:
             response = self.GetRequest(url)
             results = dict(response.json())['results']
-            retVal = '[{0:s}] - {1:s}'.format(results[0]['lexicalEntries'][0]['lexicalCategory'],
-                                              results[0]['lexicalEntries'][0]['entries'][0]['senses'][0]['definitions'][0])
+            lexCat = results[0]['lexicalEntries'][0]['lexicalCategory'].encode('ascii', 'ignore')
+            defn = results[0]['lexicalEntries'][0]['entries'][0]['senses'][0]['definitions'][0].encode('ascii', 'ignore')
+
+            retVal = '[{0:s}] - {1:s}'.format(lexCat, defn)
             return retVal
 
         except Exception as e:
@@ -81,12 +87,16 @@ class Oxford:
             self.category = self.domainList[domainIndex]
             self.numberOfWords = metadata['total']
 
+            self.wordList = []
             for result in results:
-                word = dict()
-                word['word'] = '{0:s}'.format(result['word'])
-                word['id'] = '{0:s}'.format(result['id'])
+                try:
+                    word = dict()
+                    word['word'] = '{0:s}'.format(result['word'])
+                    word['id'] = '{0:s}'.format(result['id'])
 
-                self.wordList.append(word)
+                    self.wordList.append(word)
+                except Exception as e:
+                    pass
 
             return self.category
 
@@ -97,7 +107,7 @@ class Oxford:
     def GetWord(self):
         randPos = random.randint(0, len(self.wordList))
         self.wordInUse = self.wordList[randPos]
-        while ' ' in self.wordInUse['word']:
+        while len([c for c in self.wordInUse['word'] if c in ' -_']) is not 0:
             randPos = random.randint(0, len(self.wordList))
             self.wordInUse = self.wordList[randPos]
 
