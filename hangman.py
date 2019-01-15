@@ -171,11 +171,11 @@ class Hangman:
         except Exception as e:
             print(e)
 
-    def ChangeCategory(self, __atype__='instanceobj, changes word category and starts game again returns nothing'):
+    def ChangeCategory(self, category='', __atype__='instanceobj, str, changes word category and starts game again returns nothing'):
         if not self.useOxford:
             return
 
-        category = self.oxford.ChangeCategory()
+        category = self.oxford.ChangeCategory(category)
         self.GetNewWord()
 
     def PrettyPrint(self):

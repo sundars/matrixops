@@ -22,30 +22,34 @@ class Oxford:
         self.domainList.extend(['Palaeontology', 'Parliament', 'Pathology', 'Penal', 'People', 'Pharmaceutics', 'Philately', 'Philosophy', 'Phonetics', 'Photography', 'Physics', 'Physiology', 'Plant', 'Plumbing', 'Police', 'Politics', 'Popular Music', 'Postal', 'Pottery', 'Printing', 'Professions', 'Prosody', 'Psychiatry', 'Psychology', 'Publishing', 'Racing', 'Railways', 'Rank', 'Relationships', 'Religion', 'Reptile', 'Restaurants', 'Retail', 'Rhetoric', 'Riding', 'Roads', 'Rock'])
         self.domainList.extend(['Roman Catholic Church', 'Roman History', 'Rowing', 'Royalty', 'Rugby', 'Savoury', 'Scouting', 'Second World War', 'Shoemaking', 'Sikhism', 'Skateboarding', 'Skating', 'Skiing', 'Smoking', 'Snowboarding', 'Soccer', 'Sociology', 'Space', 'Sport', 'Statistics', 'Stock Exchange', 'Surfing', 'Surgery', 'Surveying', 'Sweet', 'Swimming', 'Tea', 'Team Sports', 'Technology', 'Telecommunications', 'Tennis', 'Textiles', 'Theatre', 'Theology', 'Timber', 'Title', 'Tools', 'Trade Unionism', 'Transport', 'University', 'Variety', 'Veterinary', 'Video', 'War Of American Independence', 'Weapons', 'Weightlifting', 'Wine', 'Wrestling', 'Yoga', 'Zoology'])
 
-        domainIndex = random.randint(0, len(self.domainList)-1)
-        url = self.urlBase + 'wordlist/' + self.language + '/domains={0:s}?word_length=>{1:d}'.format(self.domainList[domainIndex],
-                                                                                                      self.minWordLength)
-        try:
-            response = self.GetRequest(url)
-            results = dict(response.json())['results']
-            metadata = dict(response.json())['metadata']
+        self.wordList = []
+        while len(self.wordList) is 0:
+            domainIndex = random.randint(0, len(self.domainList)-1)
+            url = self.urlBase + 'wordlist/' + self.language + '/domains={0:s}?word_length=>{1:d}'.format(
+                  self.domainList[domainIndex], self.minWordLength)
+            try:
+                response = self.GetRequest(url)
+                results = dict(response.json())['results']
+                metadata = dict(response.json())['metadata']
 
-            self.category = self.domainList[domainIndex]
-            self.numberOfWords = metadata['total']
+                self.category = self.domainList[domainIndex]
+                self.numberOfWords = metadata['total']
 
-            self.wordList = []
-            for result in results:
-                try:
-                    word = dict()
-                    word['word'] = '{0:s}'.format(result['word'])
-                    word['id'] = '{0:s}'.format(result['id'])
+                if self.numberOfWords > 0:
+                    for result in results:
+                        try:
+                            word = dict()
+                            word['word'] = '{0:s}'.format(result['word'])
+                            word['id'] = '{0:s}'.format(result['id'])
 
-                    self.wordList.append(word)
-                except Exception as e:
-                    pass
+                            if len([c for c in word['word'] if c in ' -_']) is 0:
+                                self.wordList.append(word)
 
-        except Exception as e:
-            print(e)
+                        except Exception as e:
+                            pass
+
+            except Exception as e:
+                print(e)
 
     def GetRequest(self, url):
         headers = {'app_id': self.appid, 'app_key': self.appkey}
@@ -71,45 +75,66 @@ class Oxford:
             print(e)
             return ''
 
-    def ChangeCategory(self):
-        domainIndex = random.randint(0, len(self.domainList)-1)
-        while self.category == self.domainList[domainIndex]:
-            domainIndex = random.randint(0, len(self.domainList)-1)
+    def ChangeCategory(self, category=''):
+        self.wordList = []
+        while len(self.wordList) is 0:
+            if len([i for i in range(len(self.domainList)) if self.domainList[i].lower() == category.lower()]) == 0:
+                domainIndex = random.randint(0, len(self.domainList)-1)
+                while self.category == self.domainList[domainIndex]:
+                    domainIndex = random.randint(0, len(self.domainList)-1)
+            else:
+                domainIndex = [d.lower() for d in self.domainList].index(category.lower())
+                category = ''
 
-        url = self.urlBase + 'wordlist/' + self.language + '/domains={0:s}?word_length=>{1:d}'.format(self.domainList[domainIndex],
-                                                                                                      self.minWordLength)
+            url = self.urlBase + 'wordlist/' + self.language + '/domains={0:s}?word_length=>{1:d}'.format(
+                  self.domainList[domainIndex], self.minWordLength)
 
-        try:
-            response = self.GetRequest(url)
-            results = dict(response.json())['results']
-            metadata = dict(response.json())['metadata']
+            try:
+                response = self.GetRequest(url)
+                results = dict(response.json())['results']
+                metadata = dict(response.json())['metadata']
 
-            self.category = self.domainList[domainIndex]
-            self.numberOfWords = metadata['total']
+                self.category = self.domainList[domainIndex]
+                self.numberOfWords = metadata['total']
 
-            self.wordList = []
-            for result in results:
-                try:
-                    word = dict()
-                    word['word'] = '{0:s}'.format(result['word'])
-                    word['id'] = '{0:s}'.format(result['id'])
+                if self.numberOfWords > 0:
+                    for result in results:
+                        try:
+                            word = dict()
+                            word['word'] = '{0:s}'.format(result['word'])
+                            word['id'] = '{0:s}'.format(result['id'])
 
-                    self.wordList.append(word)
-                except Exception as e:
-                    pass
+                            if len([c for c in word['word'] if c in ' -_']) is 0:
+                                self.wordList.append(word)
 
-            return self.category
+                        except Exception as e:
+                            pass
 
-        except Exception as e:
-            print(e)
-            return ''
+            except Exception as e:
+                print(e)
+                return ''
+
+        return self.category
 
     def GetWord(self):
-        randPos = random.randint(0, len(self.wordList))
+        oldWord = ''
+        if self.wordInUse != None:
+            oldWord = self.wordInUse['word']
+            self.wordInUse = None
+
+        tries = 0
+
+        randPos = random.randint(0, len(self.wordList)-1)
         self.wordInUse = self.wordList[randPos]
-        while len([c for c in self.wordInUse['word'] if c in ' -_']) is not 0:
-            randPos = random.randint(0, len(self.wordList))
+        tries += 1
+        while len([c for c in self.wordInUse['word'] if c in ' -_']) is not 0 or self.wordInUse['word'] == oldWord or tries < 3:
+            randPos = random.randint(0, len(self.wordList)-1)
             self.wordInUse = self.wordList[randPos]
+            tries += 1
+
+        if self.wordInUse['word'] == oldWord:
+            self.ChangeCategory()
+            self.GetWord()
 
         return self.wordInUse['word']
 
