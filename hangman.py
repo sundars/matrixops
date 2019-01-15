@@ -195,6 +195,7 @@ class Hangman:
         for i in range(0, len(self.guessedSoFar)):
             print(bcolors.UNDERLINE + self.guessedSoFar[i] + bcolors.ENDC, end='')
             print(' ', end='')
+        print(' ({0:d} letters)'.format(len(self.wordInPlay)), end='')
         print('')
 
         if hangPos > 0:

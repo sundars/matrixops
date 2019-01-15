@@ -68,7 +68,11 @@ class Oxford:
             lexCat = results[0]['lexicalEntries'][0]['lexicalCategory'].encode('utf-8')
             defn = results[0]['lexicalEntries'][0]['entries'][0]['senses'][0]['definitions'][0].encode('utf-8')
 
-            retVal = '[{0:s}] - {1:s}'.format(lexCat, defn)
+            try:
+                retVal = '[{0:s}] - {1:s}'.format(lexCat, defn)
+            except Exception as e:
+                retVal = '[{0:s}] - {1:s}'.format(lexCat.decode('utf-8'), defn.decode('utf-8'))
+
             return retVal
 
         except Exception as e:
