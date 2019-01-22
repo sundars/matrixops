@@ -1,6 +1,7 @@
 from __future__ import print_function
 import math
 from collections import OrderedDict
+from pause import Pause
 
 class Fraction:
     numerator = 0
@@ -138,10 +139,11 @@ class Fraction:
 
         return s
 
-    def ContinuedFraction(self, __atype__="instanceobj, returns nothing but prints this as a continued fraction"):
+    def ContinuedFraction(self, __atype__="instanceobj, prints current fraction as a continued fraction and returns"):
         continuedFraction = [self.numerator//self.denominator]
         Fraction.EuclidContinuedFraction(self.numerator, self.denominator, continuedFraction)
         Fraction.PrettyPrintContinuedFraction(continuedFraction, self.numerator//abs(self.numerator))
+        return Pause()
 
     @classmethod
     def LCM(cls, n1, n2, __atype__="classobj, int, int, returns an integer"):
@@ -263,9 +265,10 @@ class Fraction:
         return continuedFraction, sign
 
     @classmethod
-    def PrintContinuedFraction(cls, decimal, __atype__="classobj, float, returns nothing but prints decimal as a continued fraction"):
+    def PrintContinuedFraction(cls, decimal, __atype__="classobj, float, prints decimal as a continued fraction and returns"):
         continuedFraction, sign = Fraction.GenerateContinuedFraction(decimal)
         Fraction.PrettyPrintContinuedFraction(continuedFraction, sign)
+        return Pause()
 
     @classmethod
     def PrettyPrintContinuedFraction(cls, continuedFraction, sign):

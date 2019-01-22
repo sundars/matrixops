@@ -212,19 +212,19 @@ def parseArgs():
 
             instance = klass(marg[7:-1], True)
 
-        if (objectType == 'LinearEquations'):
+        elif (objectType == 'LinearEquations'):
             print("Specify a system of equations to solve formatted as 'LinearEquations(2*a+3*b+1*c=4:5*a-1*c=1:...)'")
             sarg = print_raw_input(">>> ")
 
             instance = klass(sarg[16:-1], True)
 
-        if (objectType == 'Fraction'):
+        elif (objectType == 'Fraction'):
             print('Specify a fraction formatted as a/b')
             farg = print_raw_input(">>> ")
 
             instance = klass(farg, False)
 
-        if (objectType == 'Hangman'):
+        elif (objectType == 'Hangman'):
             instance = klass(True)
 
         else:
