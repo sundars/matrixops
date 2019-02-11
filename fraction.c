@@ -45,6 +45,10 @@ void PrintContinuedFraction(long *continuedFraction, int sign) {
 
     for (int i=1; i<CF_MAX_SIZE; i++) {
         if (continuedFraction[i] != -1) {
+            if (continuedFraction[i+1] == 1 && i+1 < CF_MAX_SIZE && continuedFraction[i+2] == -1) {
+                continuedFraction[i] += 1;
+                continuedFraction[i+1] = -1;
+            }
             if (i == 1)
                 printf("; %ld", continuedFraction[i]);
             else
@@ -132,8 +136,8 @@ long* FromDecimal(double d) {
 }
 
 double ConvertToDecimal(char *s) {
-    int lensqrt = strlen("sqrt");
-    int lencurt = strlen("curt");
+    int lensqrt = strlen("sqrt(");
+    int lencurt = strlen("curt(");
 
     if (strcmp(s, "pi") == 0) {
         printf("pi is irrational. So fractional form doesn't exist but here is an approximation\n");
@@ -200,18 +204,26 @@ double ConvertToDecimal(char *s) {
         return (double) pow(e(), -1*pi()/2);
     }
 
-    else if (strncmp(s, "sqrt", lensqrt) == 0) {
+    else if (strncmp(s, "sqrt(", lensqrt) == 0) {
         long n;
         sscanf(s+lensqrt, "%ld", &n);
+        if (n < 0) {
+            printf("No square roots of a negative number, please\n");
+            exit(1);
+        }
         double d = pow(n, 0.5);
         if (d - (long) d > 0)
             printf("sqrt(%ld) is irrational. So fractional form doesn't exist but here is an approximation\n", n);
         return d;
     }
 
-    else if (strncmp(s, "curt", lensqrt) == 0) {
+    else if (strncmp(s, "curt(", lensqrt) == 0) {
         long n;
         sscanf(s+lencurt, "%ld", &n);
+        if (n < 0) {
+            printf("No cube roots of a negative number, please\n");
+            exit(1);
+        }
         double d = pow(n, ((double) 1/(double) 3));
         if (d - (long) d > 0)
             printf("cuberoot(%ld) is irrational. So fractional form doesn't exist but here is an approximation\n", n);
